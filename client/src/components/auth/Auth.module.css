@@ -1,0 +1,94 @@
+header,
+body {
+    height: 100%;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.authWrapper {
+    height: 100vh;
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #f5f5f5;
+}
+
+.signinForm {
+    width: 100%;
+    max-width: 430px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.signupForm {
+    width: 100%;
+    max-width: 430px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.inputField {
+    width: 400px !important;
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.inputField:focus {
+    z-index: 2;
+}
+
+.emailInput {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.passwordInput {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.errorText {
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.linkSignUp, 
+.linkSignIn{
+    text-decoration: none;
+}
+
+button.signin_success, 
+button.signup_success {
+    width: 10rem;
+    margin-top: 0.5rem;
+    font-weight: 600;
+    color: #382b22;
+    padding: 0.5em 1em;
+    background: #A7CCED;
+    border: 1px #b18597;
+    border-radius: 0.75em;
+    transition: transform 0.15s;
+    transform-style: preserve-3d;
+}
+
+button.signin_success:hover,
+button.signup_success:hover {
+    background: #8EA8C3;
+    transform: translate(0, 0.15em);
+}

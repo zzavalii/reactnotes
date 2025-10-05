@@ -1,0 +1,126 @@
+@keyframes dropDown {
+    0% {
+        transform: translateY(-150%);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(20px);
+        opacity: 1;
+    }
+    80% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.JapaneseText{
+    font-family: "Rampart One", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-style: normal;
+    color: #8EA8C3;
+    font-size: 25px;
+    margin-right: 40px;
+}
+
+.headerContainer{
+    margin-right: 40px;
+}
+
+
+.bottomContainer {
+    position: fixed;
+    top: 4rem;
+    right: 5%;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    width: 400px;
+    height: auto;
+    background-color: #CFD7C7;
+    box-shadow: 0px 1px 10px 0.1px #c2c0bf;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    animation: dropDown 0.6s ease;
+}
+
+.weather {
+    margin-right: 0.5rem;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+#headerButton {
+    padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+    background-color: #dfe9f1;
+    border-radius: 0.5rem;
+}
+
+#headerButton:hover {
+    transition: 0.5s;
+    background-color: #8EA8C3;
+}
+
+#applyCity {
+    font-weight: 600;
+    color: #382b22;
+    padding: 0.5em 1em;
+    background: rgb(105, 218, 131);
+    border: 1px #b18597;
+    border-radius: 0.5rem;
+    transition: transform 0.15s;
+    transform-style: preserve-3d;
+}
+
+#applyCity:hover {
+    background: rgb(197, 194, 194);
+    transform: translate(0, 0.15em);
+}
+
+#cityName {
+    width: 60%;
+    height: 2.4rem;
+    border-radius: 0.5rem;
+    border: 1px blue;
+    padding-left: 0.5rem;
+    outline: none;
+    margin-right: 0.5rem;
+}
+
+input#cityName:-webkit-autofill {
+    box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+}
+
+.underline{
+    border-bottom: 1px solid grey;
+}
+
+.profile_header {
+    /* display: none; */
+    position: relative;
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    padding: 1rem;
+    background-color: rgb(244, 241, 241);
+    border-radius: 0.5rem;
+    box-shadow: 0px 1px 10px 0.1px #c2c0bf;
+    right: 60px;
+    top: 80px;
+    z-index: 2;
+}
+
+.profile_header_Dark {
+    color: white;
+    background-color: rgb(168, 168, 173) !important;
+    box-shadow: 0px 1px 10px 0.1px #777779 !important;
+}

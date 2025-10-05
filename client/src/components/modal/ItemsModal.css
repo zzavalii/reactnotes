@@ -1,0 +1,101 @@
+.allContainerItems{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.opened_note {
+    overflow-y: auto;
+    height: 80%;
+    width: 60%;
+    position: fixed;
+    top: 15%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 3;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    padding: 1rem;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    flex-direction: column;
+}
+
+.blur-overlay {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 70px);
+    backdrop-filter: blur(6px);
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+.hidden {
+    display: none;
+}
+
+.allContainerItems {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.addNotesItemBtn {
+    margin-top: 1rem;
+    background-color: transparent;
+    border: none;
+}
+
+.addNotesItemBtn:hover {
+    background-color: rgba(161, 159, 159, 0.502);
+}
+
+.itemBlock {
+    height: 5rem;
+    display: flex;
+    width: 50%;
+    align-items: center;
+    justify-content: center;
+}
+
+.itemsContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.modal-input {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    border: 2px solid rgba(165, 165, 173, 0.514);
+    height: 2.5rem;
+    padding-left: 0.5rem;
+}
+
+.dragHandle{
+    color: transparent;
+    margin-right: 10px;
+}
+
+.itemBlock:hover .dragHandle {
+    color: black;
+    cursor: grab;
+}
+
+.checkItem {
+    width: 20px;
+    height: 20px;
+}
+
+.ql-toolbar{
+    text-align: center;
+}
