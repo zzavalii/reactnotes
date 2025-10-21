@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ColumnNotes from './components/notes/ColumnsNote';
 import Overview from './components/overview/Overview';
 import VanilaNotes from './components/vanilanotes/VanilaNotes'
+import Introduce from './components/introduce/introduce';
 
 
 function App() {
@@ -13,7 +14,11 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/register" replace />} />
+        {/* <Route path="/" element={<Navigate to="/register" replace />} /> */}
+        
+        <Route path="/" element={<Navigate to="/introduce" replace />} />
+
+        <Route path="/introduce" element={<Introduce/>}/>
 
         <Route path="/register" element={<Register/>} />
         <Route path="/login" element={<Login/>} />

@@ -26,9 +26,9 @@ export default function Register() {
 
         if (!response.ok) {
             const data = await response.json();
-            setErrors({ email: data.message || "Не удалось отправить код" });
+            setErrors({ email: data.message || "Unable to send code" });
         } else {
-            alert("Код отправлен на почту!");
+            alert("The code has been sent to your email!");
         }
     }
 
@@ -36,18 +36,18 @@ export default function Register() {
         e.preventDefault();
 
         if (!email && !password) {
-            setErrors({ email: "Введите почту ❗", password: "Введите пароль ❗" });
+            setErrors({ email: "Enter your email address ❗", password: "Enter password ❗" });
             return;
         } else if (!email) {
-            setErrors({ email: "Введите почту ❗" });
+            setErrors({ email: "Enter your email address ❗" });
             return;
         } else if (!password) {
-            setErrors({ password: "Введите пароль ❗" });
+            setErrors({ password: "Enter password ❗" });
             return;
         }
 
         if (!isEmailValid(email)) {
-            setErrors({ email: "Введите почту корректно ❗" });
+            setErrors({ email: "Enter your email address correctly ❗" });
             return;
         }
 
@@ -60,7 +60,7 @@ export default function Register() {
         const checkMailData = await checkMailResponse.json();
 
         if (!checkMailResponse.ok) {
-            setErrors({ email: checkMailData.message || "Пользователь с такой почтой уже существует" });
+            setErrors({ email: checkMailData.message || "A user with this email already exists." });
             return;
         };
 
@@ -71,7 +71,7 @@ export default function Register() {
     async function VerifyAccount() {
 
         if (!code || code.length !== 6) {
-            setErrors({ ...errors, code: "Введите 6-значный код" });
+            setErrors({ ...errors, code: "Please enter a 6-digit verification code" });
             return;
         }
 
@@ -85,7 +85,7 @@ export default function Register() {
         setErrors({ ...errors, code: "" });
 
         if (!dataVerifRes.message) {
-            setErrors({ ...errors, code: dataVerifRes.message || "❌ Неверный код" });
+            setErrors({ ...errors, code: dataVerifRes.message || "❌ Incorrect verification code" });
             return;
         }
 
@@ -102,7 +102,7 @@ export default function Register() {
                 const data = await response.json();
                 alert(data.message);
             } catch (err) {
-                console.error("Ошибка запроса:", err);
+                console.error("Request error:", err);
             }
         }
 
@@ -138,7 +138,7 @@ export default function Register() {
                 {step === "verification" && (
                     <>
                         <div className="mb-3" id="verificationBlock">
-                            <label htmlFor="verificationCode" className="form-label">Введите 6-значный код</label>
+                            <label htmlFor="verificationCode" className="form-label">Please enter a 6-digit verification code</label>
                             <input
                                 name="verificationCode"
                                 type="text"
@@ -151,13 +151,8 @@ export default function Register() {
                                 onChange={(e) => setCode(e.target.value)}
                             />
                             <button className="btn btn-lg btn-success btn-block" type="button" id="sendMailConfirmation" onClick={SendMailConfirmation}>Send code</button>
-                            <div className="form-text">Введите код из письма, состоящий из 6 цифр.</div>
+                            <div className="form-text">Enter the 6-digit code from the email.</div>
                         </div>
-                        {/* <div class="checkbox mb-3">
-                            <label>
-                            <input type="checkbox" value="remember-me"> Remember me
-                            </label>
-                        </div> */}
                         <button className="btn btn-lg btn-success btn-block pt-2" type="button" id="email_confirm" onClick={VerifyAccount}>Confirm</button>
                     </>
                 )}

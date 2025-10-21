@@ -37,7 +37,9 @@ export default function ColumnNotes() {
     // -- All useStates --
 
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const isLoggedIn = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn");
+    const email = localStorage.getItem("email") || sessionStorage.getItem("email");
     const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
     function toggleAdding(status) {
@@ -117,7 +119,7 @@ export default function ColumnNotes() {
 
     //unlogin
     useEffect(() => {
-        if (!token) {
+        if (!token || !isLoggedIn) {
             navigate("/login");
             return;
         }
@@ -440,7 +442,7 @@ export default function ColumnNotes() {
                             }
                             }>×</button>
                         </div>
-                        <h4>{note.title}</h4>
+                        <h5>{note.title}</h5>
                         <p>{note.content}</p>
                     </>
                 )}

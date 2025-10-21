@@ -159,7 +159,6 @@ export default function ItemsModal({ noteId, token, onClose }) {
             return;
         }
 
-        // найдём индекс куда вставить
         const afterElement = getDragAfterElement(container, e.clientY);
         setItems(prev => {
             const draggedIndex = prev.findIndex(item => item.item_id === draggingItemId);
@@ -176,7 +175,6 @@ export default function ItemsModal({ noteId, token, onClose }) {
             return updated;
         });
 
-        // убираем линию
         if (blueLineRef.current && blueLineRef.current.parentNode) {
             blueLineRef.current.parentNode.removeChild(blueLineRef.current);
         }
@@ -191,14 +189,12 @@ export default function ItemsModal({ noteId, token, onClose }) {
         // обновляем локальный стейт сразу
         setItems(prev => prev.map(item => item.item_id === id ? { ...item, content: value } : item));
 
-        // дебаунс: только одно отложенное сохранение на айтем
         const map = saveTimeoutsRef.current;
         if (map.has(id)) clearTimeout(map.get(id));
 
         const t = setTimeout(async () => {
             map.delete(id);
             try {
-                // Поменяй URL на тот, что у тебя на бэкенде для обновления контента
                 await fetch(`http://localhost:3001/notesitems/update/${id}`, {
                     method: "PUT",
                     headers: {
@@ -213,7 +209,8 @@ export default function ItemsModal({ noteId, token, onClose }) {
         }, 700);
         map.set(id, t);
     }
-    // ---- Quill config (bubble = тулбар при выделении) ----
+    // ---- Quill config ----
+
     const modules = {
     toolbar: [
         [{ font: [] }, { size: [] }],
@@ -301,7 +298,8 @@ export default function ItemsModal({ noteId, token, onClose }) {
                                     }
                                 }}
                                 autoFocus
-                                placeholder="Введите заметку..."
+                                id="newItemInput"
+                                placeholder="Enter a note..."
                             />
                         </div>
                     )}

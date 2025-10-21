@@ -19,7 +19,6 @@
     font-family: "Rampart One", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-style: normal;
     color: #8EA8C3;
     font-size: 25px;
     margin-right: 40px;
@@ -123,4 +122,8 @@ input#cityName:-webkit-autofill {
     color: white;
     background-color: rgb(168, 168, 173) !important;
     box-shadow: 0px 1px 10px 0.1px #777779 !important;
+}
+
+.dropdown-item:hover {
+    cursor: pointer;
 }

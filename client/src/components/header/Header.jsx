@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import '../header/Header.css'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-export default function Header({ isWeather, toggleWeather, city, setCity, getCityWeather, weatherData, loading, setError, error, setWeatherData, toggleDarkTheme, darkTheme }) {
+export default function Header({isWeather, toggleWeather, city, setCity, getCityWeather, weatherData, loading, setError, error, setWeatherData, toggleDarkTheme, darkTheme }) {
 
     const buttonWeatherRef = useRef(null);
     const buttonDarkThemeRef = useRef(null);
@@ -22,6 +22,13 @@ export default function Header({ isWeather, toggleWeather, city, setCity, getCit
         localStorage.setItem("isLoggedIn", "false");
         navigate('/login')
     }
+
+    const [userEmail, setUserEmail] = useState("");
+
+    useEffect(() => {
+        const savedEmail = localStorage.getItem("email") || sessionStorage.getItem("email");
+        if (savedEmail) setUserEmail(savedEmail);
+    }, []);
 
     useEffect(() => {
         function handleOutsideClickUser(event) {
@@ -136,7 +143,7 @@ export default function Header({ isWeather, toggleWeather, city, setCity, getCit
             {isUserInfo &&
                 <div className="profile_header" ref={userInfoRef}>
                     <div className="userName">User: </div>
-                    <div className="userEmail">Email: Vlad</div>
+                    <div className="userEmail">Email: {userEmail}</div>
                     <div className="edit">Edit ✏️</div>
                 </div>  
             }

@@ -558,7 +558,6 @@ button#addNoteOverview:hover {
 
 .editContainerButton{
     width: 100%;
-
 }
 
 button.saveEditingButton {
@@ -593,4 +592,13 @@ button.cancelEditingButton {
 button.cancelEditingButton:hover {
     background: rgb(235, 187, 168);
     transform: translate(0, 0.15em);
+}
+
+.btnsContainer{
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
 }

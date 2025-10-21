@@ -6,6 +6,7 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({ email: "", password: "" });
+    const [rememberMe, setRememberMe] = useState(false);
 
     const navigate = useNavigate();
 
@@ -19,18 +20,18 @@ export default function Login() {
         e.preventDefault();
 
         if (!email && !password) {
-            setErrors({ email: "Введите почту ❗", password: "Введите пароль ❗" });
+            setErrors({ email: "Enter your email address ❗", password: "Enter password ❗" });
             return;
         } else if (!email) {
-            setErrors({ email: "Введите почту ❗" });
+            setErrors({ email: "Enter your email address ❗" });
             return;
         } else if (!password) {
-            setErrors({ password: "Введите пароль ❗" });
+            setErrors({ password: "Enter password ❗" });
             return;
         }
 
         if (!isEmailValid(email)) {
-            setErrors({ email: "Введите почту корректно ❗" });
+            setErrors({ email: "Enter your email address correctly ❗" });
             return;
         }
 
@@ -38,19 +39,19 @@ export default function Login() {
             const response = await fetch("http://localhost:3001/authorization", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, rememberMe })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
                 if (response.status === 400) {
-                    setErrors({...errors, email: data.message || "Неверная почта"})
+                    setErrors({...errors, email: data.message || "Incorrect email"})
                 } else if (response.status === 401) {
-                    setErrors({...errors, password: data.message || "Неверный пароль"})
+                    setErrors({...errors, password: data.message || "Incorrect password"})
 
                 } else {
-                    setErrors({...errors, email: "Ошибка входа"})
+                    setErrors({...errors, email: "Signin error"})
                 }
                 return;
             }
@@ -58,11 +59,14 @@ export default function Login() {
             if (response.ok) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("isLoggedIn", "true");
-                navigate("/notes")
+                localStorage.setItem("email", email);
+
+                navigate("/notes");
             }
+
         } catch (error) {
-            console.error("Ошибка при авторизации:", error);
-            if (emailInError) emailInError.textContent = "Ошибка сервера";
+            console.error("Error during authorization:", error);
+            if (emailInError) emailInError.textContent = "Serrver error";
         }
 
     }
@@ -90,6 +94,19 @@ export default function Login() {
                 />
                 {/* className="btn btn-lg btn-primary btn-block mt-3" */}
                 {errors.password && <div id="signin_passwordError" className="form-text text-danger">{errors.password}</div>}
+                <div className="checkbox mb-1 mt-2">
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            id='rememberMe'
+                            className={styles.checkboxBtn} 
+                            value="remember-me" 
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+
+                        /> Remember me
+                    </label>
+                </div>
                 <button type="submit" className={styles.signin_success} onClick={handleClickSignIn}>Sign in</button>
                 <p className="p-2" id="textSignUp">Don`t have an account? <Link to="/register" className={styles.linkSignUp}>Sign up</Link></p>
                 <p className="mt-5 mb-3 text-muted">&copy; zzavalii</p>
