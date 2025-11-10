@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import '../header/Header.css'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-export default function Header({isWeather, toggleWeather, city, setCity, getCityWeather, weatherData, loading, setError, error, setWeatherData, toggleDarkTheme, darkTheme }) {
+export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city, setCity, getCityWeather, weatherData, loading, setError, error, setWeatherData, toggleDarkTheme, darkTheme }) {
 
     const buttonWeatherRef = useRef(null);
     const buttonDarkThemeRef = useRef(null);
@@ -92,7 +92,7 @@ export default function Header({isWeather, toggleWeather, city, setCity, getCity
 
                     <nav className="navbar navbar">
                         <div className="container-fluid">
-                            <button className="navbar-toggler" type="button" id="burger-btn" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <button onClick={toggleLeftPanel} className="navbar-toggler" type="button" id="burger-btn" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
                                 <span className="navbar-toggler-icon"></span>
                             </button>
                         </div>

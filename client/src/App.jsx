@@ -6,27 +6,26 @@ import ColumnNotes from './components/notes/ColumnsNote';
 import Overview from './components/overview/Overview';
 import VanilaNotes from './components/vanilanotes/VanilaNotes'
 import Introduce from './components/introduce/introduce';
-
+import ReminderManager from './components/ReminderManager/ReminderManager'; 
+import SortedTagsPage from './components/SortedTagsPage/SortedTagsPage';
 
 function App() {
-
   return (
     <>
-    <BrowserRouter>
-      <Routes>
-        {/* <Route path="/" element={<Navigate to="/register" replace />} /> */}
-        
-        <Route path="/" element={<Navigate to="/introduce" replace />} />
+      <BrowserRouter>
+        <ReminderManager />
 
-        <Route path="/introduce" element={<Introduce/>}/>
-
-        <Route path="/register" element={<Register/>} />
-        <Route path="/login" element={<Login/>} />
-        <Route path="/notes" element={<ColumnNotes/>}/>
-        <Route path="/overview" element={<Overview/>}/>
-        <Route path="/vanila" element={<VanilaNotes/>}/>
-      </Routes>
-    </BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/introduce" replace />} />
+          <Route path="/introduce" element={<Introduce/>}/>
+          <Route path="/register" element={<Register/>} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/pagetags" element={<SortedTagsPage/>} />
+          <Route path="/notes" element={<ColumnNotes/>}/>
+          <Route path="/overview" element={<Overview/>}/>
+          <Route path="/vanila" element={<VanilaNotes/>}/>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }

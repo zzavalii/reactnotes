@@ -9,30 +9,31 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgb(225, 207, 207);  
+    background-color: rgb(84, 85, 174);  
     border-radius: 10px;       
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(126, 142, 152);  
+    background-color: rgb(15, 33, 124);  
 }
 
 .headerContainerIntroduce {
     position: fixed;
-    top: 0;
-    left: 0;
-    height: 60px;
-    width: 100%;
+    top: 1rem;
+    right: 10rem;
+    height: 50px;
+    width: 20%;
     padding: 0.8rem 4rem;
     display: flex;
     justify-content: center;
     align-items: center;
-
+    border-radius: 0.5rem;
+    
     background: linear-gradient(120deg, #6b7aa1, #a5b4fc, #8eb5e5);
     background-size: 300% 300%;
     animation: gradientShift 8s ease infinite;
     border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(57, 56, 56, 0.2);
 
     z-index: 100;
     transition: background 0.4s ease, border-color 0.4s ease;
@@ -109,8 +110,8 @@ html {
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
-    position: absolute;
-    right: 4rem;
+    /* position: absolute;
+    right: 4rem; */
 }
 
 .wrapper {
@@ -178,9 +179,9 @@ html {
     flex-direction: column;
 }
 
-.box{
-    /* background-color: #556880; */
-}
+/* .box{
+    background-color: #556880;
+} */
 
 .appName {
     font-weight: 1000; 
@@ -312,30 +313,24 @@ html {
     transform: translate(0, 0.15em);
 }
 
-
 .themeToggleContainer {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 8rem;
 }
 
 .themeToggle {
     display: none;
 }
 
-
-
-
-
 .themeToggleLabel {
-    width: 120px;
+    width: 110px;
     height: 30px;
     background: linear-gradient(120deg, #b3c3e6, #8eb5e5);
     border-radius: 30px;
     position: relative;
     cursor: pointer;
-    transition: background 0.5s ease;
+    transition: background 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -355,20 +350,20 @@ html {
     left: 4px;
     width: 50px;
     height: 22px;
-    background: #ffffff;
+    background: #ffffff8c;
     border-radius: 20px;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .themeToggle:checked + .themeToggleLabel {
-    background: linear-gradient(120deg, #3b3b58, #1c1c30);
+    background: linear-gradient(120deg, #74749f, #474763);
     color: #e0e0e0;
     box-shadow: 0 0 15px rgba(100, 100, 200, 0.4);
 }
 
 .themeToggle:checked + .themeToggleLabel::after {
-    transform: translateX(62px);
+    transform: translateX(52px);
     background: #dcdcdc;
 }
 
@@ -385,7 +380,7 @@ html {
 .themeIcon.moon {
     opacity: 0;
     transform: translateY(5px);
-    color: black;
+    color: rgb(0, 0, 0);
 }
 
 .themeToggle:checked + .themeToggleLabel .sun {
@@ -396,4 +391,17 @@ html {
 .themeToggle:checked + .themeToggleLabel .moon {
     opacity: 1;
     transform: translateY(0);
+}
+
+.darkIntroduce .signInBtn,
+.darkIntroduce .signUpBtn,
+.darkIntroduce .container1_underform,
+.darkIntroduce .container1,
+.darkIntroduce .headerContainerIntroduce{
+    background: linear-gradient(120deg, #0e1525, #5390db);
+    color: #f1f1f1;
+    transition: background 0.3s, color 0.3s;
+    background-size: 300% 300%;
+    animation: gradientShift 8s ease infinite;
+    border-bottom: 1px solid rgba(119, 89, 89, 0.4);
 }

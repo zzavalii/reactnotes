@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Overview.module.css'
 import ItemsModal from '../modal/ItemsModal'
 
+import ReminderForm from '../reminder/ReminderForm'
+
 export default function Overview() {
     // -- All useStates --
     const [notes, setNotes] = useState([]);
@@ -230,8 +232,8 @@ export default function Overview() {
         if (!el) return;
 
         setIsDragging(false);
-        
-        el.style.zIndex = ++zCounter.current; 
+
+        el.style.zIndex = ++zCounter.current;
 
         const startX = e.clientX;
         const startY = e.clientY;
@@ -306,7 +308,7 @@ export default function Overview() {
         }
     }
 
-    
+
     function addNote(status) {
         if (!newTitle.trim() && !newContent.trim()) {
             return;
@@ -317,7 +319,7 @@ export default function Overview() {
         toggleAdding(status);
     }
 
-    function toggleAdding(status){
+    function toggleAdding(status) {
         setIsAdding(prev => ({
             ...prev,
             [status]: !prev[status],
@@ -327,10 +329,10 @@ export default function Overview() {
     const addingRef = useRef(null);
 
     useEffect(() => {
-        function handleOutsideClick(event){
-            if(addingRef.current && !addingRef.current.contains(event.target)){
-                if(isAdding.not_started){
-                    if(newTitle.trim() || newContent.trim()){
+        function handleOutsideClick(event) {
+            if (addingRef.current && !addingRef.current.contains(event.target)) {
+                if (isAdding.not_started) {
+                    if (newTitle.trim() || newContent.trim()) {
                         addNote('not_started')
                     } else {
                         toggleAdding("not_started");
@@ -355,7 +357,7 @@ export default function Overview() {
                 body: JSON.stringify({ title: editingTitle, content: editingContent })
             });
 
-            if(!response.ok){
+            if (!response.ok) {
                 console.error("Ошибка при редактировании");
             }
 
@@ -373,12 +375,11 @@ export default function Overview() {
 
     const outsSaveRef = useRef(null)
 
-
     useEffect(() => {
         function handleOutsideClickSave(event) {
             if (editingNoteId && outsSaveRef.current && !outsSaveRef.current.contains(event.target)) {
-            saveEditedNote();
-            cancelEditing();
+                saveEditedNote();
+                cancelEditing();
             }
         }
 
@@ -391,17 +392,41 @@ export default function Overview() {
         };
     }, [editingNoteId, saveEditedNote, cancelEditing]);
 
-    function startEditing(note){
+    function startEditing(note) {
         setEditingNoteId(note.id.toString());
         setEditingTitle(note.title);
         setEditingContent(note.content);
     }
 
-    function cancelEditing(){
+    function cancelEditing() {
         setEditingNoteId(null);
         setEditingTitle('');
         setEditingContent('');
     }
+
+    const [reminderNoteId, setReminderNoteId] = useState(null);
+    const reminderRefs = useRef({});
+
+    function toggleSwapReminder(noteId) {
+        setReminderNoteId(prev => (prev === noteId ? null : noteId));
+    }
+
+    useEffect(() => {
+        function handleOutsideClick(event) {
+            const currentRef = reminderRefs.current[reminderNoteId];
+            if (currentRef && !currentRef.contains(event.target) && !event.target.closest('input[value="Reminder"]')) {
+                setReminderNoteId(null);
+            }
+        }
+
+        if (reminderNoteId) {
+            document.addEventListener("mousedown", handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClick);
+        };
+    }, [reminderNoteId]);
 
     return (
         <>
@@ -442,7 +467,7 @@ export default function Overview() {
                             else delete notesRef.current[note.id];
                         }}
                         // onMouseDown={editingNoteId?.toString() === note.id.toString() ? undefined : (e) => handleMouseDown(e, note.id)}
-                        style={{ backgroundColor: noteColors[note.id] || palette[0], left: "30px", top: "30px"}}
+                        style={{ backgroundColor: noteColors[note.id] || palette[0], left: "30px", top: "30px" }}
                     >
                         <div
                             className={styles.dragHandleOverview}
@@ -452,40 +477,61 @@ export default function Overview() {
                             ⋮⋮
                         </div>
                         {editingNoteId?.toString() === note.id.toString() ? (
-                        <div ref={outsSaveRef}>
-                            <input
-                                type="text"
-                                placeholder="Enter a title..."
-                                value={editingTitle}
-                                onChange={(e) => setEditingTitle(e.target.value)}
-                                id="new_note_inputTitle"
-                                className={styles.new_note_inputTitle}
-                                onClick={(e) => e.stopPropagation()}
-                                autoFocus
-                            />
-                            <input
-                                type="text"
-                                placeholder="Enter a note..."
-                                value={editingContent}
-                                onChange={(e) => setEditingContent(e.target.value)}
-                                id="new_note_input"
-                                onClick={(e) => e.stopPropagation()}
-                            />
-                            <div className={styles.editContainerButton}>
-                                <button className={styles.saveEditingButton} onClick={(e) => {
-                                    e.stopPropagation()
-                                    saveEditedNote()
-                                }}>Save</button>
-                                <button className={styles.cancelEditingButton} onClick={(e) => {
-                                    e.stopPropagation()
-                                    cancelEditing()
-                                }}>Cancel</button>
-                            </div>
-                        </div>) : (
+                            <div ref={outsSaveRef}>
+                                <input
+                                    type="text"
+                                    placeholder="Enter a title..."
+                                    value={editingTitle}
+                                    onChange={(e) => setEditingTitle(e.target.value)}
+                                    id="new_note_inputTitle"
+                                    className={styles.new_note_inputTitle}
+                                    onClick={(e) => e.stopPropagation()}
+                                    autoFocus
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Enter a note..."
+                                    value={editingContent}
+                                    onChange={(e) => setEditingContent(e.target.value)}
+                                    id="new_note_input"
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                                <div className={styles.editContainerButton}>
+                                    <button className={styles.saveEditingButton} onClick={(e) => {
+                                        e.stopPropagation()
+                                        saveEditedNote()
+                                    }}>Save</button>
+                                    <button className={styles.cancelEditingButton} onClick={(e) => {
+                                        e.stopPropagation()
+                                        cancelEditing()
+                                    }}>Cancel</button>
+                                </div>
+                            </div>) : (
                             <>
+                                {reminderNoteId === note.id && (
+                                    <div ref={(el) => (reminderRefs.current[note.id] = el)} className={styles.ReminnderForm}>
+                                        <ReminderForm
+                                            // onClose={() => setShowReminder(false)} 
+                                            noteId={note.id}
+                                            token={token}
+                                            onSetReminder={(reminderData) => {
+                                                setReminderNoteId(null);
+                                            }}
+                                        />
+                                    </div>
+                                )}
                                 <h5>{note.title}</h5>
                                 <p>{note.content}</p>
                                 <div className={styles.btnsContainer}>
+                                    <input
+                                        type="button"
+                                        value="Reminder"
+                                        className={styles.reminder}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleSwapReminder(note.id);
+                                        }}
+                                    />
                                     <button id='btnChange' className={styles.btnChange} onClick={(e) => {
                                         e.stopPropagation()
                                         changeNoteColor(note.id)
@@ -503,32 +549,31 @@ export default function Overview() {
                         )}
                     </div>
                 ))}
-
                 {isAdding.not_started ? (
-                        <div className={styles.note_wrapperOverview} ref={addingRef}>
-                            <div id='inputsContainerOverview' className={styles.inputsContainerOverview}>
-                                <input
-                                    type="text"
-                                    placeholder="Enter a title..."
-                                    value={newTitle}
-                                    onChange={(e) => setNewTitle(e.target.value)}
-                                    id="new_note_inputTitle"
-                                    className={styles.new_note_inputTitle}
-                                    autoFocus
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Enter a note..."
-                                    value={newContent}
-                                    onChange={(e) => setNewContent(e.target.value)}
-                                    id="new_note_input"
-                                />
-                            </div>
-                            <button onClick={() => addNote("not_started")} id='saveBtnOverview' className={styles.saveBtnOverview}>Save</button>
+                    <div className={styles.note_wrapperOverview} ref={addingRef}>
+                        <div id='inputsContainerOverview' className={styles.inputsContainerOverview}>
+                            <input
+                                type="text"
+                                placeholder="Enter a title..."
+                                value={newTitle}
+                                onChange={(e) => setNewTitle(e.target.value)}
+                                id="new_note_inputTitle"
+                                className={styles.new_note_inputTitle}
+                                autoFocus
+                            />
+                            <input
+                                type="text"
+                                placeholder="Enter a note..."
+                                value={newContent}
+                                onChange={(e) => setNewContent(e.target.value)}
+                                id="new_note_input"
+                            />
                         </div>
-                    ) : (
-                        <button className={styles.add_button} id='overviewAddButton' onClick={() => toggleAdding("not_started")}>+ Add Note</button>
-                    )}
+                        <button onClick={() => addNote("not_started")} id='saveBtnOverview' className={styles.saveBtnOverview}>Save</button>
+                    </div>
+                ) : (
+                    <button className={styles.add_button} id='overviewAddButton' onClick={() => toggleAdding("not_started")}>+ Add Note</button>
+                )}
             </div>
             {selectedNoteId && (
                 <ItemsModal

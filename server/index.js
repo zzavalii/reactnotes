@@ -17,10 +17,11 @@ const app = express()
 app.use(
     cors({
         origin: "http://localhost:5173",
-        methods: ["GET", "POST", "PUT", "DELETE"], 
-        allowedHeaders: ["Content-Type", "Authorization"], 
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
 app.use(express.json());
 
 function authenticateToken(req, res, next) {
@@ -37,10 +38,10 @@ function authenticateToken(req, res, next) {
     });
 }
 
-app.post("/registration", async (req,res) => {
-    try{
-        const checkQuery  = `SELECT * FROM users WHERE email = ?`;
-        const {email, password} = req.body;
+app.post("/registration", async (req, res) => {
+    try {
+        const checkQuery = `SELECT * FROM users WHERE email = ?`;
+        const { email, password } = req.body;
         const [users] = await db.query(checkQuery, [email]);
 
         if (users.length > 0) {
@@ -59,7 +60,7 @@ app.post("/registration", async (req,res) => {
         } else {
             console.error("❌ Error: the entry was not added to the DB.");
             res.status(500).json({ message: "❌ Server error" });
-        }  
+        }
     } catch (err) {
         console.error("Registration error:", err);
         res.status(500).json({ message: "❌ Server error" });
@@ -83,7 +84,7 @@ app.post('/checkEmail', async (req, res) => {
 });
 
 app.post("/sendMail", (req, res) => {
-    try{
+    try {
         const { usermail } = req.body;
 
         const verificationCode = String(Math.floor(100000 + Math.random() * 900000))
@@ -95,7 +96,7 @@ app.post("/sendMail", (req, res) => {
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
-            auth:{
+            auth: {
                 user: process.env.EMAIL,
                 pass: process.env.GOOGLEPASSWORD
             }
@@ -140,16 +141,16 @@ app.post("/verify", (req, res) => {
         return res.status(400).json({ message: "❌ Incorrect confirmation code" });
     }
 
-    verificationCodes.delete(email); 
+    verificationCodes.delete(email);
 
     res.json({ message: "✅ The code has been confirmed, you may proceed." });
 });
 
 app.post("/authorization", async (req, res) => {
-    try{
-        const {email, password, rememberMe} = req.body;
+    try {
+        const { email, password, rememberMe } = req.body;
 
-        const checkQuery  = `SELECT * FROM users WHERE email = ?`;
+        const checkQuery = `SELECT * FROM users WHERE email = ?`;
         const [result] = await db.query(checkQuery, [email]);
 
         if (result.length < 1) {
@@ -171,8 +172,8 @@ app.post("/authorization", async (req, res) => {
             { expiresIn }
         );
         console.log(token);
-        
-        res.status(200).json({ message: "✅ Authorization success", token,  email: user.email, userId: user.user_id });
+
+        res.status(200).json({ message: "✅ Authorization success", token, email: user.email, userId: user.user_id });
 
     } catch (err) {
         console.error("Registration error:", err);
@@ -181,7 +182,7 @@ app.post("/authorization", async (req, res) => {
 });
 
 app.post("/newnote", authenticateToken, async (req, res) => {
-    const {title, content, status} = req.body;
+    const { title, content, status } = req.body;
     const user_id = req.user.userId;
 
     try {
@@ -207,7 +208,7 @@ app.post("/newnote", authenticateToken, async (req, res) => {
 
 app.get('/usernotes', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId; 
+        const userId = req.user.userId;
         const query = 'SELECT * FROM notes WHERE user_id = ? ORDER BY created_at DESC';
         const [result] = await db.query(query, [userId]);
 
@@ -219,10 +220,10 @@ app.get('/usernotes', authenticateToken, async (req, res) => {
     }
 });
 
-app.put('/notes/:id/status', authenticateToken, async(req,res) => {
-    const noteId  = req.params.id;
+app.put('/notes/:id/status', authenticateToken, async (req, res) => {
+    const noteId = req.params.id;
     const { status } = req.body;
-    try{
+    try {
         const [query] = await db.query(
             `UPDATE notes SET status =? WHERE id = ?`,
             [status, noteId]
@@ -234,7 +235,7 @@ app.put('/notes/:id/status', authenticateToken, async(req,res) => {
         );
 
         const updatedNote = rows[0];
-        res.json({updatedNote: updatedNote})
+        res.json({ updatedNote: updatedNote })
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "❌ Error fetching notes" });
@@ -272,18 +273,18 @@ app.delete('/notes/delete/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.put('/notes/update/:id', authenticateToken, async(req, res) => {
+app.put('/notes/update/:id', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.userId; 
+        const userId = req.user.userId;
         const noteId = req.params.id;
         const { title, content } = req.body;
 
         const [result] = await db.query(`
             UPDATE notes
             SET title = ?, content = ?
-            WHERE id = ? AND user_id = ?`, [title, content,noteId, userId]
-        ); 
-        
+            WHERE id = ? AND user_id = ?`, [title, content, noteId, userId]
+        );
+
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Note not found" });
         }
@@ -316,7 +317,7 @@ app.post('/newitems', async (req, res) => {
             [insertResult.insertId]
         );
 
-        res.status(200).json({  message: "✅ Item добавлен", noteItem: rows[0]});
+        res.status(200).json({ message: "✅ Item добавлен", noteItem: rows[0] });
 
     } catch (err) {
         console.error("Error adding item:", err);
@@ -400,4 +401,165 @@ app.put("/notesitems/update/:id", async (req, res) => {
     }
 });
 
-app.listen(PORT, ()=> {console.log(`server is running on ${PORT}`)})
+//reminder
+app.put("/notes/:id/reminder", authenticateToken, async (req, res) => {
+    const noteId = req.params.id;
+    const userId = req.user.userId;
+    const { reminder_type, reminder_time, timer_duration } = req.body;
+
+    try {
+        let finalReminderTime = reminder_time;
+        if (reminder_type === 'timer' && timer_duration) {
+            const now = new Date();
+            finalReminderTime = new Date(now.getTime() + timer_duration * 60000);
+            finalReminderTime = finalReminderTime.toISOString().slice(0, 19).replace("T", " ");
+        }
+
+        const result = await db.query(
+            `UPDATE notes
+            SET reminder_type = ?, reminder_time = ?, timer_duration = ?, is_reminder_sent = 0
+            WHERE id = ? AND user_id = ?`,
+            [reminder_type, finalReminderTime, timer_duration, noteId, userId]
+        );
+
+        res.json({ message: "Reminder saved" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
+app.get("/notes/reminders", async (req, res) => {
+    const [rows] = await db.query(`
+        SELECT id, title, content, reminder_time, is_reminder_sent
+        FROM notes
+        WHERE reminder_time IS NOT NULL AND is_reminder_sent = 0
+    `);
+    res.json(rows);
+});
+
+app.put("/notes/:id/reminderSent", async (req, res) => {
+    const { id } = req.params;
+    await db.query(`UPDATE notes SET is_reminder_sent = 1 WHERE id = ?`, [id]);
+    res.sendStatus(200);
+});
+
+app.post("/notes/:id/addnewtag", async (req, res) => {
+    const { id } = req.params;
+    const { tags } = req.body;
+
+    if (!Array.isArray(tags)) {
+        return res.status(400).json({ error: "tags must be Array" });
+    }
+
+    try {
+        for (const tag of tags) {
+            await db.query(
+                "INSERT IGNORE INTO tags (name) VALUES (?)",
+                [tag]
+            );
+        }
+
+        const addedTags = [];
+        for (const tag of tags) {
+            const [rows] = await db.query("SELECT id, name FROM tags WHERE name = ?", [tag]);
+            if (rows.length) {
+                const tagId = rows[0].id;
+                await db.query(
+                    "INSERT IGNORE INTO note_tags (note_id, tag_id) VALUES (?, ?)",
+                    [id, tagId]
+                );
+                addedTags.push({ id: tagId, name: tag });
+            }
+        }
+
+        res.json({ success: true, tags: addedTags });
+
+    } catch (error) {
+        console.error("Error updating tags:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.get("/notes/:id", async (req, res) => {
+    const { id } = req.params;
+
+    const [noteRows] = await db.query("SELECT * FROM notes WHERE id = ?", [id]);
+    if (!noteRows.length) return res.status(404).json({ error: "Notes not found" });
+
+    const [tagRows] = await db.query(`
+        SELECT t.id, t.name  
+        FROM tags t
+        JOIN note_tags nt ON nt.tag_id = t.id
+        WHERE nt.note_id = ?
+    `, [id]);
+
+    const tags = tagRows.map(t => ({ id: t.id, name: t.name }));  
+    res.json({ ...noteRows[0], tags });
+});
+
+app.get("/tags", async(req, res) => {
+    try {
+        const [rows] = await db.query("SELECT DISTINCT name FROM tags ORDER BY name ASC");
+        res.json({ tags: rows.map(row => row.name) });
+    } catch (err) {
+        console.error("Error to get tags:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+})
+
+app.delete("/notes/delete/:noteId/tags/:tagId", async (req, res) => {   
+    const noteIdNum = Number(req.params.noteId);
+    const tagIdNum = Number(req.params.tagId);
+
+    try {
+        const [result] = await db.query("DELETE FROM note_tags WHERE note_id = ? AND tag_id = ?", [noteIdNum, tagIdNum]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Tag not found for this note" });
+        }
+
+        const [stillUsed] = await db.query("SELECT * FROM note_tags WHERE tag_id = ?", [tagIdNum]);
+        if (stillUsed.length === 0) {
+            await db.query("DELETE FROM tags WHERE id = ?", [tagIdNum]);
+        }
+
+        res.json({ message: "Tag removed from note" });
+    } catch (err) {
+        console.error("Error deleting tag:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.get("/allnote/tags", async(req, res) => {
+    try {
+        const [rows] = await db.query(`
+            SELECT 
+                t.name AS tag_name,
+                n.id AS note_id,
+                n.title,
+                n.content
+            FROM tags t
+            JOIN note_tags nt ON nt.tag_id = t.id
+            JOIN notes n ON n.id = nt.note_id
+            ORDER BY t.name;
+        `);
+
+        const grouped = rows.reduce((acc, row) => {
+            if (!acc[row.tag_name]) acc[row.tag_name] = [];
+            acc[row.tag_name].push({
+                id: row.note_id,
+                title: row.title,
+                content: row.content
+            });
+            return acc;
+        }, {});
+
+        res.json(grouped);
+    } catch (err) {
+        console.error("Error to get tags:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+})
+
+app.listen(PORT, () => { console.log(`server is running on ${PORT}`) })

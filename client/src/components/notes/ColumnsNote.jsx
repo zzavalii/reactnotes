@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Header from '../header/header';
 import ItemsModal from '../modal/ItemsModal';
+import TogglePanel from '../togglePanel/TogglePanel';
 
 export default function ColumnNotes() {
     // -- All useStates --
@@ -62,28 +63,28 @@ export default function ColumnNotes() {
 
     const columnRefs = useRef({});
     const blueLineRef = useRef(null);
-    const buttonWeatherRef = useRef(null);
+    // const buttonWeatherRef = useRef(null);
     const addingRef = useRef(null);
 
     useEffect(() => {
         function handleOutsideClick(event) {
             if (addingRef.current && !addingRef.current.contains(event.target)) {
                 if (isAdding.not_started) {
-                    if (newTitle.trim() && newContent.trim()) {
+                    if (newTitle.trim() || newContent.trim()) {
                         addNote("not_started");
                     } else {
                         toggleAdding("not_started");
                     }
                 }
                 if (isAdding.in_progress) {
-                    if (newTitle.trim() && newContent.trim()) {
+                    if (newTitle.trim() || newContent.trim()) {
                         addNote("in_progress");
                     } else {
                         toggleAdding("in_progress");
                     }
                 }
                 if (isAdding.done) {
-                    if (newTitle.trim() && newContent.trim()) {
+                    if (newTitle.trim() || newContent.trim()) {
                         addNote("done");
                     } else {
                         toggleAdding("done");
@@ -146,15 +147,56 @@ export default function ColumnNotes() {
                 const response = await fetch("http://localhost:3001/usernotes", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (!response.ok) throw new Error("Ошибка сервера");
+                if (!response.ok) throw new Error("Server error");
                 const data = await response.json();
-                setNotes(data.notes);
+
+                const notesWithTags = await Promise.all(
+                    data.notes.map(async (note) => {
+                        try {
+                            const tagRes = await fetch(`http://localhost:3001/notes/${note.id}`);
+                            if (!tagRes.ok) return { ...note, tags: [] };
+
+                            const noteData = await tagRes.json();
+                            
+                            const tags = noteData.tags?.map(t => {
+                                if (typeof t === 'string') {
+                                    console.warn('Tags came as strings:', t);
+                                    return { id: null, name: t }; 
+                                }
+                                return { id: t.id, name: t.name };
+                            }).filter(t => t.id !== null) || [];
+
+                            return { ...note, tags };
+                        } catch (err) {
+                            console.error(err);
+                            return { ...note, tags: [] };
+                        }
+                    })
+                );
+
+
+                setNotes(notesWithTags);
             } catch (err) {
                 console.error(err);
             }
         }
         fetchNotes();
     }, [token]);
+
+    const [allTags, setAllTags] = useState([]);
+
+    async function fetchTags() {
+        const result = await fetch("http://localhost:3001/tags", {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (!result.ok) throw new Error("Server error");
+        const data = await result.json();
+        setAllTags(data.tags || [])
+    }
+
+    useEffect(() => {
+        fetchTags();
+    }, [token])
 
     useEffect(() => {
         const el = document.createElement('div');
@@ -177,18 +219,18 @@ export default function ColumnNotes() {
                 },
                 body: JSON.stringify({ title, content, status })
             });
-            if (!response.ok) throw new Error("Ошибка сервера");
+            if (!response.ok) throw new Error("Server Error");
             const data = await response.json();
             setNotes(prev => [...prev, data.note]);
         } catch (err) {
             console.error(err);
-            alert("❌ Не удалось сохранить заметку");
+            alert("Failed to save note");
         }
     }
 
     function addNote(status) {
-        if (!newTitle.trim() || !newContent.trim()) {
-            alert("❌ Заполните все поля");
+        if (!newTitle.trim() && !newContent.trim()) {
+            alert("Fill in all fields");
             return;
         }
         createNote(newTitle, newContent, status);
@@ -208,9 +250,71 @@ export default function ColumnNotes() {
                 body: JSON.stringify({ status: newStatus })
             });
         } catch (err) {
-            console.error("Ошибка при обновлении статуса:", err);
+            console.error("Error updating status:", err);
         }
     }
+
+    const [newTag, setNewTag] = useState('');
+    const [addingTagNoteId, setAddingTagNoteId] = useState(null);
+
+    async function addNewTag(noteId) {
+        if (!newTag.trim()) return;
+
+        const normalizedTag = newTag.replace(/^#/, '').trim();
+
+        try {
+            const response = await fetch(`http://localhost:3001/notes/${noteId}/addnewtag`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ tags: [normalizedTag] })
+            });
+
+            if (!response.ok) throw new Error("Server Error");
+            const data = await response.json();
+
+            setNotes(prev =>
+                prev.map(note => {
+                    if (note.id === noteId) {
+                        const existingIds = new Set((note.tags || []).map(t => t.id));
+                        const newTags = data.tags.filter(t => !existingIds.has(t.id));
+                        return { ...note, tags: [...(note.tags || []), ...newTags] };
+                    }
+                    return note;
+                })
+        );
+
+            await fetchTags();
+            setNewTag('');
+            setAddingTagNoteId(null);
+        } catch (err) {
+            console.error(err);
+            alert("Failed to add tag");
+        }
+    }
+
+    const windowTagRef = useRef();
+
+    useEffect(() => {
+        function handleOutsideClickRef(event) {
+            if (windowTagRef.current && !windowTagRef.current.contains(event.target)) {
+                if(newTag.trim()){
+                    addNewTag(addingTagNoteId);
+                } else {
+                    setAddingTagNoteId(null);
+                    setNewTag('');
+                }
+            }
+        }
+        document.addEventListener("mousedown", handleOutsideClickRef);
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClickRef);
+        };
+
+    }, [addingTagNoteId, newTag])
 
     function getDragAfterElement(container, y) {
         if (!container) return null;
@@ -360,12 +464,11 @@ export default function ColumnNotes() {
 
     const outsSaveRef = useRef(null)
 
-
     useEffect(() => {
         function handleOutsideClickSave(event) {
             if (editingNoteId && outsSaveRef.current && !outsSaveRef.current.contains(event.target)) {
-            saveEditedNote();
-            cancelEditing();
+                saveEditedNote();
+                cancelEditing();
             }
         }
 
@@ -377,8 +480,6 @@ export default function ColumnNotes() {
             document.removeEventListener("mousedown", handleOutsideClickSave);
         };
     }, [editingNoteId, saveEditedNote, cancelEditing]);
-    
-
 
     function cancelEditing() {
         setEditingNoteId(null);
@@ -386,6 +487,35 @@ export default function ColumnNotes() {
         setEditingContent('');
     }
 
+    async function deleteNoteTag(noteId, tagId) {
+        console.log("Frontend deleteNoteTag:", { noteId, tagId, typeof: typeof tagId });
+        try {
+            const response = await fetch(`http://localhost:3001/notes/delete/${noteId}/tags/${tagId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+
+                setNotes(prev =>
+                    prev.map(note =>
+                        note.id === noteId
+                            ? { ...note, tags: note.tags.filter(t => t.id !== tagId) }
+                            : note
+                    )
+                );
+            } else {
+                console.error('Error when deleting a tag');
+            }
+
+            await fetchTags(); 
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     // ===================== RENDER ======================== //
     function renderNotesColumn(columnNotes) {
@@ -442,12 +572,98 @@ export default function ColumnNotes() {
                             }
                             }>×</button>
                         </div>
-                        <h5>{note.title}</h5>
+                        <h5 className='titleNoteText'>{note.title}</h5>
                         <p>{note.content}</p>
+                        <div className="tagsBlock">
+                            {note.tags && note.tags.length > 0 && (
+                                <>
+                                    <div className="tagsList">
+                                        {note.tags.map((tag) => (
+                                            <div key={tag.id} className="oneTagItem">
+                                                <span className="tagItem">#{tag.name}</span>
+                                                <button onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    deleteNoteTag(note.id, tag.id)
+                                                }} className='deleteTagBtn'>×</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+
+
+                            {addingTagNoteId === note.id ? (
+                                <div className="addTagForm" ref={windowTagRef}>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter the tag..."
+                                        value={newTag}
+                                        onChange={(e) => setNewTag(e.target.value)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        autoFocus
+                                        className='inputTagName'
+                                    />
+
+                                    {allTags.length > 0 && (
+                                        <div className="tagsDropdown">
+                                            {allTags.map((tag, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="tagOption"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setNewTag(tag);
+                                                    }}
+                                                >
+                                                    #{tag}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <div className="blockTagsBtns">
+                                        <button
+                                            className='btnSaveTag'
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                addNewTag(note.id);
+                                            }}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            className='btnCloseTagWindow'
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setAddingTagNoteId(null);
+                                                setNewTag('');
+                                            }}
+                                        >
+                                            ✖
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    id="btnAddTags"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setAddingTagNoteId(note.id);
+                                    }}
+                                >
+                                    + Add Tag
+                                </button>
+                            )}
+                        </div>
                     </>
                 )}
             </div>
         ));
+    }
+
+    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
+
+    function toggleLeftPanel() {
+        setIsLeftPanelOpen(prev => !prev);
     }
 
     return (
@@ -465,12 +681,14 @@ export default function ColumnNotes() {
                 setWeatherData={setWeatherData}
                 toggleDarkTheme={toggleDarkTheme}
                 darkTheme={darkTheme}
+                toggleLeftPanel={toggleLeftPanel}
             />
 
             <div className="note_panel">
                 <div className="left_panel">
-                    <div className="block"></div>
+                    <TogglePanel isOpen={isLeftPanelOpen} /> 
                 </div>
+
 
                 <div className="note_container">
 
@@ -490,7 +708,7 @@ export default function ColumnNotes() {
                                 <div id='inputsContainer_notStarted'>
                                     <input
                                         type="text"
-                                        placeholder="Введите заголовок..."
+                                        placeholder="Enter a title..."
                                         value={newTitle}
                                         onChange={(e) => setNewTitle(e.target.value)}
                                         id="new_note_inputTitle"
@@ -498,7 +716,7 @@ export default function ColumnNotes() {
                                     />
                                     <input
                                         type="text"
-                                        placeholder="Введите заметку..."
+                                        placeholder="Enter a note..."
                                         value={newContent}
                                         onChange={(e) => setNewContent(e.target.value)}
                                         id="new_note_input"
@@ -549,8 +767,8 @@ export default function ColumnNotes() {
                         {isAdding.done ? (
                             <div className="note_wrapper_Done" ref={addingRef}>
                                 <div id='inputsContainer_Done'>
-                                    <input type="text" placeholder="Введите заголовок..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} id="new_note_inputTitle" autoFocus />
-                                    <input type="text" placeholder="Введите заметку..." value={newContent} onChange={(e) => setNewContent(e.target.value)} id="new_note_input" />
+                                    <input type="text" placeholder="Enter a title..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} id="new_note_inputTitle" autoFocus />
+                                    <input type="text" placeholder="Enter a note..." value={newContent} onChange={(e) => setNewContent(e.target.value)} id="new_note_input" />
                                 </div>
                                 <button onClick={() => addNote("done")} id='saveBtn_Done'>Save</button>
                             </div>

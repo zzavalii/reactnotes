@@ -82,10 +82,15 @@ body {
     margin-top: 0.5rem;
     width: 100%;
     background-color: rgb(255, 255, 255);
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.1rem 0.5rem;
     border-radius: 0.5rem;
     overflow-wrap: break-word; 
     white-space: normal; 
+}
+
+.titleNoteText{
+    padding-right: 4rem; 
+    word-wrap: break-word;
 }
 
 #btnDelete {
@@ -409,22 +414,6 @@ button#saveBtn_Done {
     filter: invert(1);
 }
 
-.left_panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 350px;
-    height: 100%;
-    background-color: aliceblue;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 1050;
-}
-
-.left_panel.show {
-    transform: translateX(0);
-}
-
 .block {
     padding: 1rem;
 }
@@ -538,11 +527,6 @@ button#addNoteOverview:hover {
     transform: translate(0, 0.15em);
 }
 
-button#addNoteOverview:hover {
-    background: rgb(197, 194, 194);
-    transform: translate(0, 0.15em);
-}
-
 .noteWrapper {
     position: fixed;
     width: 20rem;
@@ -558,13 +542,14 @@ button#addNoteOverview:hover {
 
 .editContainerButton{
     width: 100%;
+    margin-bottom: 10px;
 }
 
 button.saveEditingButton {
     width: 50%;
     font-weight: 600;
     color: #382b22;
-    padding: 0.5em 1em;
+    padding: 0.2rem;
     background: rgb(174, 235, 168, 0.2);
     border: 1px #b18597;
     border-radius: 0.75em;
@@ -581,7 +566,7 @@ button.cancelEditingButton {
     width: 50%;
     font-weight: 600;
     color: #382b22;
-    padding: 0.5em 1em;
+    padding: 0.2rem;
     background: rgba(235, 204, 168, 0.2);
     border: 1px #b18597;
     border-radius: 0.75em;
@@ -602,3 +587,115 @@ button.cancelEditingButton:hover {
     flex-direction: row;
     gap: 0.3rem;
 }
+
+/* ======== ALL FOR TAGS ======== */
+
+.tagsDropdown {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    width: 100%;
+    z-index: 10;
+}
+
+.tagOption {
+    padding: 5px 8px;
+    cursor: pointer;
+}
+
+.tagOption:hover {
+    background-color: #f0f0f0;
+}
+
+.tagItem{
+    margin-right: 5px;
+    font-size: 14px;
+    color: gray;
+}
+
+#btnAddTags {
+    background-color: transparent;
+    border: none;
+    border-radius: 0.4rem;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#btnAddTags:hover {
+    background-color: rgba(235, 255, 124, 0.817);
+}
+
+.inputTagName{
+    margin-top: 10px;
+    border: none;
+    outline: none;
+}
+
+.blockTagsBtns{
+    display: flex;
+    gap: 5px;
+    margin: 5px 0px 5px 0px;
+}
+
+.btnSaveTag,
+.btnCloseTagWindow{
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-radius: 0.5rem;
+    background-color: white;
+    transition: 0.2s;
+}
+
+.btnSaveTag{
+    background: rgb(174, 235, 168, 0.2);
+}
+
+.btnSaveTag:hover{
+    background: rgb(174, 235, 168)
+}
+
+.btnCloseTagWindow{
+    background-color: #ad454e4d;
+}
+
+.btnCloseTagWindow:hover{
+    background-color: #e63947b3;
+}
+
+.tagsList{
+    display: flex;
+    flex-direction: row;
+}
+
+.deleteTagBtn{
+    display: none;
+}
+
+.oneTagItem:hover .deleteTagBtn{
+    display: flex;
+}
+
+.deleteTagBtn {
+    background-color: transparent;
+    border: none;
+    border-radius: 0.4rem;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteTagBtn:hover {
+    background-color: rgba(255, 124, 124, 0.817);
+    color: white;
+}
+

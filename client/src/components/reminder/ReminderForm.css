@@ -1,0 +1,128 @@
+.react-calendar__tile--active {
+    background: #4ade80 !important; 
+    color: #fff !important;
+    border-radius: 10px;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    color: #000 !important;
+    border-radius: 10px;
+}
+
+.react-calendar__tile--now {
+    border: 1px solid #4ade80 !important;
+    border-radius: 10px;
+}
+
+.labelTypePicker{
+    margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reminderForm{
+    min-width: 200px;
+}
+
+.selectOfType{
+    height: 2rem;
+    width: 80%;
+    border-radius: 0.5rem;
+    padding-left: 5px;
+}
+
+.selectOfType:focus{
+    outline: none;
+}
+
+.selectOfType:hover {
+    border-color: #22c55e !important;
+}
+
+.timer-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 300px;
+    margin: 15px auto;
+}
+
+.timer-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.timer-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.timer-input {
+    width: 100%;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 16px;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+    padding: 12px 20px 12px 24px;
+    font-size: 17px;
+    color: #374151;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.timer-input:hover {
+    border-color: #60a5fa;
+    box-shadow: 0 0 6px rgba(96, 165, 250, 0.3);
+}
+
+.timer-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+.timer-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.timer-input.glass {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.btnSaveTimeNotification {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0.3rem 1.2rem;
+    border-radius: 0.7rem;
+    cursor: pointer;
+    border: none;
+
+    color: #000000;
+    text-decoration: none;
+    background: linear-gradient(120deg, #6b7aa1, #50e75b, #8eb5e5);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+
+    box-shadow: 0 4px 15px rgba(100, 120, 180, 0.25);
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.btnSaveTimeNotification:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(100, 120, 180, 0.35);
+    filter: brightness(1.1);
+}
+

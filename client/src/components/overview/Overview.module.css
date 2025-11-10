@@ -226,3 +226,36 @@ button.cancelEditingButton:hover {
     padding-left: 5px;
     padding-right: 10px;
 }
+
+.ReminnderForm{
+    position: absolute;
+    /* top: 0;
+    left: 105%; */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    z-index: 999;
+    transition: opacity 0.2s ease-in-out;
+}
+
+
+.reminder {
+    background-color: transparent;
+    border: 1px solid grey;
+    border-radius: 0.4rem;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    padding-left: 2px;
+    padding-right: 2px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reminder:hover {
+    background-color: rgba(239, 117, 221, 0.342);
+}

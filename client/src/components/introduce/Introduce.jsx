@@ -1,8 +1,30 @@
 import '../introduce/Introduce.css'
 
 import { Link } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react';
 
 export default function Introduce () {
+
+    const [darkTheme, setDarkTheme] = useState(() => {
+        const savedTheme = localStorage.getItem("darkThemeIntroduce");
+        if (savedTheme === 'true') {
+            return savedTheme;
+        }
+    })
+    function toggleDarkTheme() {
+        setDarkTheme(prev => {
+            localStorage.setItem("darkThemeIntroduce", !prev);
+            return !prev;
+        });
+    }
+
+    useEffect(() => {
+            if (darkTheme) {
+                document.body.classList.add("darkIntroduce")
+            } else {
+                document.body.classList.remove("darkIntroduce")
+            }
+        }, [darkTheme])
 
     return (
         <>
@@ -34,8 +56,11 @@ export default function Introduce () {
                                 Light/Dark
                             </div> */}
 
-                            <div className="themeToggleContainer">
-                                <input type="checkbox" id="themeToggle" className="themeToggle" />
+                            <div
+                            className="themeToggleContainer" 
+                            >
+                                <input  checked={darkTheme}
+                                        onChange={toggleDarkTheme} type="checkbox" id="themeToggle" className="themeToggle" />
                                 <label htmlFor="themeToggle" className="themeToggleLabel">
                                     <span className="themeIcon sun">Light</span>
                                     <span className="themeIcon moon">Dark</span>
