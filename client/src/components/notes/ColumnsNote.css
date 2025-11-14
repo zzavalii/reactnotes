@@ -689,13 +689,15 @@ button.cancelEditingButton:hover {
     color: #888;
     font-size: 20px;
     cursor: pointer;
-    height: 20px;
+    height: 15px;
+    width: 100%;
     align-items: center;
     justify-content: center;
+    background-color: rgba(255, 124, 124, 0.3);
 }
 
 .deleteTagBtn:hover {
-    background-color: rgba(255, 124, 124, 0.817);
+    background-color: rgba(255, 124, 124, 0.8);
     color: white;
 }
 

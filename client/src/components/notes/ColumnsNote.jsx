@@ -660,10 +660,15 @@ export default function ColumnNotes() {
         ));
     }
 
-    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
+    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(() => {
+        return localStorage.getItem("isLeftPanelOpen") === "true";
+    });
 
     function toggleLeftPanel() {
-        setIsLeftPanelOpen(prev => !prev);
+        setIsLeftPanelOpen(prev => {
+            localStorage.setItem("isLeftPanelOpen", !prev);
+            return !prev;
+        });
     }
 
     return (

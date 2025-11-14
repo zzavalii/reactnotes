@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import styles from './SortedTagsPage.module.css'
 
 export default function SortedTagsPage() {
     const [tags, setTags] = useState({});
@@ -21,18 +22,18 @@ export default function SortedTagsPage() {
     }, [token]);
 
     return (
-        <div className="tagsContainer">
+        <div className={styles.tagsContainer}>
             {Object.entries(tags).map(([tagName, notes]) => (
-                <div key={tagName} className="tagBlock">
-                    <h2>{tagName}</h2>
-                    <ul>
+                <div key={tagName} className={styles.tagBlock}>
+                    <div className={styles.tagNameBlock}>#{tagName}</div>
+                    <div className={styles.ListNotes}>
                         {notes.map((note) => (
-                            <li className="note" key={note.id}>
-                                <h3>{note.title}</h3>
+                            <div className={styles.note} key={note.id}>
+                                <h5>{note.title}</h5>
                                 <p>{note.content}</p>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 </div>
             ))}
         </div>

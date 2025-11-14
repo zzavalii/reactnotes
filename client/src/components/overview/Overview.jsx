@@ -3,6 +3,7 @@ import Header from "../header/header";
 import { useNavigate } from 'react-router-dom';
 import styles from './Overview.module.css'
 import ItemsModal from '../modal/ItemsModal'
+import TogglePanel from "../togglePanel/TogglePanel";
 
 import ReminderForm from '../reminder/ReminderForm'
 
@@ -428,6 +429,18 @@ export default function Overview() {
         };
     }, [reminderNoteId]);
 
+
+    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(() => {
+        return localStorage.getItem("isLeftPanelOpen") === "true";
+    });
+
+    function toggleLeftPanel() {
+        setIsLeftPanelOpen(prev => {
+            localStorage.setItem("isLeftPanelOpen", !prev);
+            return !prev;
+        });
+    }
+
     return (
         <>
             <Header
@@ -443,6 +456,7 @@ export default function Overview() {
                 setWeatherData={setWeatherData}
                 toggleDarkTheme={toggleDarkTheme}
                 darkTheme={darkTheme}
+                toggleLeftPanel={toggleLeftPanel}
             />
 
             <div
@@ -451,6 +465,9 @@ export default function Overview() {
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
             >
+                <div className="left_panel">
+                    <TogglePanel isOpen={isLeftPanelOpen} /> 
+                </div>
                 {notes.map((note) => (
                     <div
                         className={styles.noteOverviewContainer}

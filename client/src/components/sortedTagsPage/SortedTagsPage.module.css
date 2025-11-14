@@ -1,0 +1,39 @@
+.tagsContainer{
+    padding: 10px;
+}
+
+.tagBlock{
+    margin-bottom: 10px;
+    background-color: rgba(224, 215, 215, 0.5);
+    padding: 0rem 0.2rem 0.8rem 0.5rem;
+}
+
+.tagNameBlock{
+    font-size: 15px;
+    font-weight: bold;
+    background-color: rgb(184, 175, 175);
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0rem 0rem 0.5rem;
+    min-width: 80px;
+    display: inline-block;
+    text-align: center;
+}
+
+.note {
+    position: relative;
+    margin-top: 0.5rem;
+    width: 300px;
+    background-color: rgb(255, 255, 255);
+    padding: 0.5rem 0.5rem 0.1rem 0.5rem;
+    border-radius: 0.5rem;
+    overflow-wrap: break-word; 
+    white-space: normal; 
+}
+
+.ListNotes{
+    margin-left: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}

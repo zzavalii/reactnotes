@@ -10,8 +10,8 @@ export default function TogglePanel ({isOpen}) {
                 <>
                     <h3>Panel Menu</h3>
                     <div className="list">
-                        <Link to="/pagetags">
-                            <div className="divButtonTagsGroup">
+                        <Link className="divButtonTagsGroup" to="/pagetags">
+                            <div>
                                 Sorted tags
                             </div>
                         </Link>
