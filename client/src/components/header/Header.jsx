@@ -7,43 +7,9 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
     const buttonWeatherRef = useRef(null);
     const buttonDarkThemeRef = useRef(null);
     const weatherRef = useRef(null);
-    const userInfoRef = useRef(null);
 
     const location = useLocation();
     const navigate = useNavigate()
-    const [isUserInfo, setUserInfo] = useState(false);
-
-    function handlerUserInfo () {
-        setUserInfo(prev => !prev)
-    }
-
-    function unlogin() {
-        localStorage.removeItem("token")
-        localStorage.setItem("isLoggedIn", "false");
-        navigate('/login')
-    }
-
-    const [userEmail, setUserEmail] = useState("");
-
-    useEffect(() => {
-        const savedEmail = localStorage.getItem("email") || sessionStorage.getItem("email");
-        if (savedEmail) setUserEmail(savedEmail);
-    }, []);
-
-    useEffect(() => {
-        function handleOutsideClickUser(event) {
-            if (
-                userInfoRef.current &&
-                !userInfoRef.current.contains(event.target)
-            ) {
-                if(isUserInfo) handlerUserInfo();
-            }
-        }
-        document.addEventListener("mousedown", handleOutsideClickUser);
-        return () => {
-            document.removeEventListener("mousedown", handleOutsideClickUser);
-        }
-    }, [isUserInfo])
 
     //Weather outside click handler
     useEffect(() => {
@@ -84,7 +50,7 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
         <header className="p-1 mb-1 border-bottom">
             <div className="headerContainer"> 
                 <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                    <a href="/" className="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                    <a href="" className="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
                         <svg className="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use></use></svg>
                     </a>
 
@@ -128,25 +94,8 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
                     >
                         Light/Dark
                     </div>
-                    <div className="dropdown text-end" id="rightestItem">
-                        <a href="#" className="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="mdo" width="26" height="26" className="rounded-circle" />
-                        </a>
-                        <ul className="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-                            <li><a className="dropdown-item" id="profile" onClick={handlerUserInfo}>Profile</a></li>
-                            <li><hr className="dropdown-divider" /></li>
-                            <li><a className="dropdown-item" id="logout" onClick={unlogin}>Sign out</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
-            {isUserInfo &&
-                <div className="profile_header" ref={userInfoRef}>
-                    <div className="userName">User: </div>
-                    <div className="userEmail">Email: {userEmail}</div>
-                    <div className="edit">Edit ✏️</div>
-                </div>  
-            }
 
             {isWeather &&
                 <div className="bottomContainer" ref={weatherRef}>
@@ -159,7 +108,7 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
                         />
                         <input
                             type="button"
-                            value="Search 🔎"
+                            value="Search"
                             id="applyCity"
                             onClick={getCityWeather}
                         />

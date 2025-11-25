@@ -1,0 +1,335 @@
+/* Container */
+.focus-mode-container {
+    min-height: 100vh;
+    background-color: #f5f3ef;
+    padding: 2rem;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Title */
+.focus-mode-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    color: #2c2c2c;
+    font-weight: 700;
+}
+
+/* Loading State */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    color: #666;
+}
+
+/* Notes Grid */
+.notes-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+    font-size: 1.2rem;
+}
+
+/* Note Card */
+.note-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.note-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-color: #6b9bd1;
+}
+
+.note-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+}
+
+.note-card-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #2c2c2c;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.note-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-in_progress {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-not_started {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.note-card-content {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 16px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: row;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Note Section */
+.modal-note-section {
+    flex: 1;
+    padding: 2rem;
+    border-right: 1px solid #eee;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #2c2c2c;
+    font-weight: 700;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    padding: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+/* Status Selector */
+.status-selector {
+    margin-bottom: 1.5rem;
+}
+
+.status-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.status-select {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    font-size: 1rem;
+    width: 100%;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.status-select:focus {
+    outline: none;
+    border-color: #6b9bd1;
+}
+
+/* Note Content */
+.note-content-section {
+    margin-top: 1.5rem;
+}
+
+.content-heading {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.content-text {
+    color: #666;
+    line-height: 1.6;
+    font-size: 1rem;
+    white-space: pre-wrap;
+}
+
+/* Timers Panel */
+.timers-panel {
+    width: 300px;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow-y: auto;
+}
+
+.timer-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timer-heading {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    color: #2c2c2c;
+    text-align: center;
+    font-weight: 600;
+}
+
+.timer-display {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+    color: #2c2c2c;
+    transition: color 0.3s ease;
+}
+
+.timer-display.active {
+    color: #d14343;
+}
+
+.timer-display.active-stopwatch {
+    color: #28a745;
+}
+
+/* Timer Inputs */
+.timer-inputs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.timer-input {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 2px solid #ddd;
+    font-size: 1rem;
+    text-align: center;
+    transition: border-color 0.2s ease;
+}
+
+.timer-input:focus {
+    outline: none;
+    border-color: #6b9bd1;
+}
+
+/* Timer Controls */
+.timer-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.timer-button {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: none;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.timer-button.start {
+    flex: 1;
+    background-color: #28a745;
+}
+
+.timer-button.start:hover {
+    back

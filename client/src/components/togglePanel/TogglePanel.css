@@ -9,26 +9,234 @@
 
 .TogglePanelBlock.open {
     width: 250px; 
-    padding: 1rem;
+    padding: 0.3rem;
 }
 
-.list{
+.allToggleList {
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.infoAccountEmail {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: row;
     align-items: center;
 }
 
-.divButtonTagsGroup{
+.userEmailInfo {
+    height: 3rem;
     width: 100%;
-    height: 30px;
     border-radius: 0.5rem;
     display: flex;
     align-items: center;
-    padding-left: 10px;
+    gap: 10px;
+    padding: 0rem 0.5rem 0rem 0.5rem;
     cursor: pointer;
-    text-decoration: none;
-    color: black;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2c2c2c;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.divButtonTagsGroup:hover{
-    background-color: #b9b6b0;
+.userEmailInfo:hover {
+    background-color: #d4d0c8;
+    transform: translateX(2px);
+}
+
+.panelUserInfo {
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, #d4d0c8 0%, #c2beb6 100%);
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btnPanel {
+    padding: 0.25rem 1rem;
+    margin: 0.25rem 0;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile {
+    background-color: #f5f3ef;
+    color: #2c2c2c;
+    border: 2px solid transparent;
+}
+
+.profile:hover {
+    background-color: #fff;
+    border-color: #6b9bd1;
+    transform: translateX(4px);
+    box-shadow: 0 2px 6px rgba(107, 155, 209, 0.3);
+}
+
+.logout {
+    background-color: #f5f3ef;
+    color: #d14343;
+    border: 2px solid transparent;
+}
+
+.logout:hover {
+    background-color: #ffe6e6;
+    border-color: #d14343;
+    transform: translateX(4px);
+    box-shadow: 0 2px 6px rgba(209, 67, 67, 0.3);
+}
+
+.list {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 2rem;
+    gap: 5px;
+}
+
+.divButtonTagsGroup {
+    width: 100%;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: #2c2c2c;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.divButtonTagsGroup::before {
+    margin-right: 0.5rem;
+}
+
+.divButtonTagsGroup:hover {
+    background-color: #d4d0c8;
+    border-color: #a39d93;
+    transform: translateX(2px);
+}
+
+.divButtonTagsGroup:active {
+    transform: translateX(4px);
+}
+
+.profile_header {
+    position: absolute;
+    width: 300px;
+    min-height: 200px;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f5f3ef 0%, #eeebe4 100%);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    left: 10px;
+    top: 70px;
+    z-index: 2;
+    animation: fadeIn 0.3s ease;
+    border: 1px solid #d4d0c8;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.profile_header_Dark {
+    background: linear-gradient(135deg, #3a3a3d 0%, #2c2c2e 100%);
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-color: #555;
+}
+
+.userName,
+.userEmail {
+    padding: 0.75rem 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #d4d0c8;
+    margin-bottom: 0.5rem;
+}
+
+.userName {
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+.userEmail {
+    color: #5a5a5a;
+    word-break: break-all;
+}
+
+.edit {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: #6bbed1;
+    color: white;
+    border-radius: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.edit:hover {
+    background-color: #5a8bc4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 155, 209, 0.4);
+}
+
+.edit:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .TogglePanelBlock.open {
+        width: 200px;
+    }
+    
+    .profile_header {
+        width: 250px;
+        right: 10px;
+    }
+}
+
+.avatar{
+    width: 30px;
+    height: 30px;
+    background-color: #6bbed1;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

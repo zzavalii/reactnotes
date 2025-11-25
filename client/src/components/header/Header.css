@@ -28,7 +28,6 @@
     margin-right: 40px;
 }
 
-
 .bottomContainer {
     position: fixed;
     top: 4rem;
@@ -101,29 +100,4 @@ input#cityName:-webkit-autofill {
 
 .underline{
     border-bottom: 1px solid grey;
-}
-
-.profile_header {
-    /* display: none; */
-    position: relative;
-    position: absolute;
-    width: 300px;
-    height: 200px;
-    padding: 1rem;
-    background-color: rgb(244, 241, 241);
-    border-radius: 0.5rem;
-    box-shadow: 0px 1px 10px 0.1px #c2c0bf;
-    right: 60px;
-    top: 80px;
-    z-index: 2;
-}
-
-.profile_header_Dark {
-    color: white;
-    background-color: rgb(168, 168, 173) !important;
-    box-shadow: 0px 1px 10px 0.1px #777779 !important;
-}
-
-.dropdown-item:hover {
-    cursor: pointer;
 }

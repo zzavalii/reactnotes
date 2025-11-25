@@ -10,7 +10,8 @@ const db = mysql.createPool({
     database: process.env.DBNAME,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    dateStrings: true
 });
 
 (async () => {

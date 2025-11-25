@@ -160,16 +160,13 @@ body {
     flex-direction: row;
 }
 
-#add_note_notstarted,
-#add_note_inprogress,
+#add_note_not_started,
+#add_note_in_progress,
 #add_note_done {
     height: 2rem;
     user-select: none;
     transition: background 20ms ease-in;
     cursor: pointer;
-    /* display: inline-flex; */
-    /* align-items: center; */
-    /* padding-inline: 12px; */
     white-space: nowrap;
     font-size: 15px;
     flex-shrink: 0;
@@ -207,7 +204,8 @@ body {
     background-color: rgb(197, 194, 194, 0.5);
 }
 
-button#add_note_notstarted {
+/* поменять на add_note_not_started и тд------------------------------------------------------------------------------------------------ */
+button#add_note_not_started {
     font-weight: 600;
     color: #382b22;
     padding: 0.5em 1em;
@@ -218,7 +216,7 @@ button#add_note_notstarted {
     transform-style: preserve-3d;
 }
 
-button#add_note_notstarted:hover {
+button#add_note_not_started:hover {
     background: rgb(197, 194, 194);
     transform: translate(0, 0.15em);
 }
@@ -247,7 +245,7 @@ button#saveBtn_notStarted:hover {
     background-color: rgba(165, 138, 239, 0.3);
 }
 
-button#add_note_inprogress {
+button#add_note_in_progress {
     font-weight: 600;
     color: #382b22;
     padding: 0.5em 1em;
@@ -258,7 +256,7 @@ button#add_note_inprogress {
     transform-style: preserve-3d;
 }
 
-button#add_note_inprogress:hover {
+button#add_note_in_progress:hover {
     background: rgb(197, 138, 239);
     transform: translate(0, 0.15em);
 }

@@ -1,122 +1,40 @@
-import './ColumnsNote.css'
-import { useState, useEffect, useRef } from 'react'
+import './ColumnsNote.css';
+import { useReducer, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../header/header';
 import ItemsModal from '../modal/ItemsModal';
 import TogglePanel from '../togglePanel/TogglePanel';
+import NoteColumn from './NoteColumn';
+
+import { notesReducer, initialState, ACTIONS } from './store/notesReducer';
+import { useNotes } from './hooks/useNotes';
+import { useTags } from './hooks/useTags';
+import { useWeather } from './hooks/useWeather';
+
+const COLUMNS = [
+    { id: 'not_started', title: 'Not Started', className: 'note_notstarted' },
+    { id: 'in_progress', title: 'In Progress', className: 'note_inprogress' },
+    { id: 'done', title: 'Done', className: 'note_done' }
+];
 
 export default function ColumnNotes() {
-    // -- All useStates --
-    const [notes, setNotes] = useState([]);
-    const [newTitle, setNewTitle] = useState('');
-    const [newContent, setNewContent] = useState('');
-    const [isAdding, setIsAdding] = useState({
-        not_started: false,
-        in_progress: false,
-        done: false
-    });
-    const [editingNoteId, setEditingNoteId] = useState(null);
-    const [editingTitle, setEditingTitle] = useState('');
-    const [editingContent, setEditingContent] = useState('');
 
-    // //Weather states
-    const [city, setCity] = useState('');
-    const [isWeather, setWeather] = useState(false);
-    const [weatherData, setWeatherData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [draggingId, setDraggingId] = useState(null);
-
-    //dark theme
-    const [darkTheme, setDarkTheme] = useState(() => {
-        const savedTheme = localStorage.getItem("darkTheme");
-        if (savedTheme === 'true') {
-            return savedTheme;
-        }
-    })
-    const [selectedNoteId, setSelectedNoteId] = useState(null);
-    // -- All useStates --
+    const [state, dispatch] = useReducer(notesReducer, initialState);
 
     const navigate = useNavigate();
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
     const isLoggedIn = localStorage.getItem("isLoggedIn") || sessionStorage.getItem("isLoggedIn");
-    const email = localStorage.getItem("email") || sessionStorage.getItem("email");
     const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
-    function toggleAdding(status) {
-        setIsAdding(prev => ({
-            ...prev,
-            [status]: !prev[status],
-        }))
-    }
-
-    function toggleSwapWeather() {
-        setWeather(prev => !prev);
-    }
-
-    function toggleDarkTheme() {
-        setDarkTheme(prev => {
-            localStorage.setItem("darkTheme", !prev);
-            return !prev;
-        });
-    }
+    const notesAPI = useNotes(state, dispatch, token);
+    const tagsAPI = useTags(dispatch, token);
+    const weatherAPI = useWeather(state, dispatch, API_KEY);
 
     const columnRefs = useRef({});
     const blueLineRef = useRef(null);
-    // const buttonWeatherRef = useRef(null);
     const addingRef = useRef(null);
-
-    useEffect(() => {
-        function handleOutsideClick(event) {
-            if (addingRef.current && !addingRef.current.contains(event.target)) {
-                if (isAdding.not_started) {
-                    if (newTitle.trim() || newContent.trim()) {
-                        addNote("not_started");
-                    } else {
-                        toggleAdding("not_started");
-                    }
-                }
-                if (isAdding.in_progress) {
-                    if (newTitle.trim() || newContent.trim()) {
-                        addNote("in_progress");
-                    } else {
-                        toggleAdding("in_progress");
-                    }
-                }
-                if (isAdding.done) {
-                    if (newTitle.trim() || newContent.trim()) {
-                        addNote("done");
-                    } else {
-                        toggleAdding("done");
-                    }
-                }
-            }
-        }
-        document.addEventListener("mousedown", handleOutsideClick);
-        return () => {
-            document.removeEventListener("mousedown", handleOutsideClick);
-        }
-    }, [isAdding, newTitle, newContent])
-
-    async function getCityWeather() {
-        if (!city.trim()) {
-            setError("Please enter the city");
-            return;
-        }
-        setLoading(true);
-        setError("");
-        try {
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
-            const res = await fetch(weatherUrl);
-            if (!res.ok) throw new Error("Не удалось получить погоду");
-            const data = await res.json();
-            setWeatherData(data);
-        } catch (err) {
-            setError("Error of downloading info", err)
-        } finally {
-            setLoading(false);
-        }
-    }
+    const windowTagRef = useRef(null);
+    const outsSaveRef = useRef(null);
 
     //unlogin
     useEffect(() => {
@@ -124,84 +42,36 @@ export default function ColumnNotes() {
             navigate("/login");
             return;
         }
+
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             const now = Date.now() / 1000;
+
             if (payload.exp < now) {
                 localStorage.removeItem("token");
                 localStorage.setItem("isLoggedIn", "false");
                 navigate("/login");
             }
         } catch (err) {
-            console.error("Невалидный токен", err);
+            console.error("Invalid token", err);
             localStorage.removeItem("token");
             localStorage.setItem("isLoggedIn", "false");
             navigate("/login");
         }
-    }, [navigate, token])
+    }, [navigate, token, isLoggedIn]);
 
     //render notes
     useEffect(() => {
-        async function fetchNotes() {
-            try {
-                const response = await fetch("http://localhost:3001/usernotes", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                if (!response.ok) throw new Error("Server error");
-                const data = await response.json();
-
-                const notesWithTags = await Promise.all(
-                    data.notes.map(async (note) => {
-                        try {
-                            const tagRes = await fetch(`http://localhost:3001/notes/${note.id}`);
-                            if (!tagRes.ok) return { ...note, tags: [] };
-
-                            const noteData = await tagRes.json();
-                            
-                            const tags = noteData.tags?.map(t => {
-                                if (typeof t === 'string') {
-                                    console.warn('Tags came as strings:', t);
-                                    return { id: null, name: t }; 
-                                }
-                                return { id: t.id, name: t.name };
-                            }).filter(t => t.id !== null) || [];
-
-                            return { ...note, tags };
-                        } catch (err) {
-                            console.error(err);
-                            return { ...note, tags: [] };
-                        }
-                    })
-                );
-
-
-                setNotes(notesWithTags);
-            } catch (err) {
-                console.error(err);
-            }
-        }
-        fetchNotes();
+        notesAPI.fetchNotes();
+        tagsAPI.fetchTags();
     }, [token]);
 
-    const [allTags, setAllTags] = useState([]);
-
-    async function fetchTags() {
-        const result = await fetch("http://localhost:3001/tags", {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        if (!result.ok) throw new Error("Server error");
-        const data = await result.json();
-        setAllTags(data.tags || [])
-    }
-
-    useEffect(() => {
-        fetchTags();
-    }, [token])
-
+    //blue line 
     useEffect(() => {
         const el = document.createElement('div');
         el.id = 'blueLine';
         blueLineRef.current = el;
+
         return () => {
             if (blueLineRef.current && blueLineRef.current.parentNode) {
                 blueLineRef.current.parentNode.removeChild(blueLineRef.current);
@@ -209,117 +79,65 @@ export default function ColumnNotes() {
         };
     }, []);
 
-    async function createNote(title, content, status) {
-        try {
-            const response = await fetch("http://localhost:3001/newnote", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ title, content, status })
-            });
-            if (!response.ok) throw new Error("Server Error");
-            const data = await response.json();
-            setNotes(prev => [...prev, data.note]);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to save note");
-        }
-    }
-
-    function addNote(status) {
-        if (!newTitle.trim() && !newContent.trim()) {
-            alert("Fill in all fields");
-            return;
-        }
-        createNote(newTitle, newContent, status);
-        setNewTitle("");
-        setNewContent("");
-        toggleAdding(status);
-    }
-
-    async function updateNoteStatus(noteId, newStatus) {
-        try {
-            await fetch(`http://localhost:3001/notes/${noteId}/status`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
-        } catch (err) {
-            console.error("Error updating status:", err);
-        }
-    }
-
-    const [newTag, setNewTag] = useState('');
-    const [addingTagNoteId, setAddingTagNoteId] = useState(null);
-
-    async function addNewTag(noteId) {
-        if (!newTag.trim()) return;
-
-        const normalizedTag = newTag.replace(/^#/, '').trim();
-
-        try {
-            const response = await fetch(`http://localhost:3001/notes/${noteId}/addnewtag`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ tags: [normalizedTag] })
-            });
-
-            if (!response.ok) throw new Error("Server Error");
-            const data = await response.json();
-
-            setNotes(prev =>
-                prev.map(note => {
-                    if (note.id === noteId) {
-                        const existingIds = new Set((note.tags || []).map(t => t.id));
-                        const newTags = data.tags.filter(t => !existingIds.has(t.id));
-                        return { ...note, tags: [...(note.tags || []), ...newTags] };
-                    }
-                    return note;
-                })
-        );
-
-            await fetchTags();
-            setNewTag('');
-            setAddingTagNoteId(null);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to add tag");
-        }
-    }
-
-    const windowTagRef = useRef();
-
+    //outside click form adding
     useEffect(() => {
-        function handleOutsideClickRef(event) {
+        function handleOutsideClick(event) {
+            if (addingRef.current && !addingRef.current.contains(event.target)) {
+                COLUMNS.forEach(column => {
+                    if (state.isAdding[column.id]) {
+                        if (state.newNote.title.trim() || state.newNote.content.trim()) {
+                            notesAPI.addNote(column.id);
+                        } else {
+                            dispatch({ type: ACTIONS.TOGGLE_ADDING, payload: column.id });
+                        }
+                    }
+                });
+            }
+        }
+
+        document.addEventListener("mousedown", handleOutsideClick);
+        return () => document.removeEventListener("mousedown", handleOutsideClick);
+    }, [state.isAdding, state.newNote, notesAPI]);
+
+    //outside click form tags
+    useEffect(() => {
+        function handleOutsideClickTag(event) {
             if (windowTagRef.current && !windowTagRef.current.contains(event.target)) {
-                if(newTag.trim()){
-                    addNewTag(addingTagNoteId);
+                if (state.tags.newTag.trim()) {
+                    tagsAPI.addNewTag(state.tags.addingToNoteId, state.tags.newTag);
                 } else {
-                    setAddingTagNoteId(null);
-                    setNewTag('');
+                    dispatch({ type: ACTIONS.CLEAR_TAG_INPUT });
                 }
             }
         }
-        document.addEventListener("mousedown", handleOutsideClickRef);
 
-        return () => {
-            document.removeEventListener("mousedown", handleOutsideClickRef);
-        };
+        document.addEventListener("mousedown", handleOutsideClickTag);
+        return () => document.removeEventListener("mousedown", handleOutsideClickTag);
+    }, [state.tags.addingToNoteId, state.tags.newTag, tagsAPI]);
 
-    }, [addingTagNoteId, newTag])
+    //outside click editing form
+    useEffect(() => {
+        function handleOutsideClickSave(event) {
+            if (state.editing.noteId && outsSaveRef.current && !outsSaveRef.current.contains(event.target)) {
+                notesAPI.saveEditedNote();
+            }
+        }
 
-    function getDragAfterElement(container, y) {
+        document.addEventListener("mousedown", handleOutsideClickSave);
+        return () => document.removeEventListener("mousedown", handleOutsideClickSave);
+    }, [state.editing.noteId, notesAPI.saveEditedNote])
+
+    const notesByColumn = useMemo(() => ({
+        not_started: state.notes.filter(note => note.status === 'not_started'),
+        in_progress: state.notes.filter(note => note.status === 'in_progress'),
+        done: state.notes.filter(note => note.status === 'done')
+    }), [state.notes]);
+
+    const getDragAfterElement = useCallback((container, y) => {
         if (!container) return null;
         const draggableElements = [...container.querySelectorAll('.note:not(.dragging)')];
         let closest = { offset: Number.NEGATIVE_INFINITY, element: null };
+
         for (const child of draggableElements) {
             const box = child.getBoundingClientRect();
             const offset = y - box.top - box.height / 2;
@@ -327,11 +145,12 @@ export default function ColumnNotes() {
                 closest = { offset, element: child };
             }
         }
-        return closest.element;
-    }
 
-    //dragging notes
-    function handleColumnDragOver(e, colId) {
+        return closest.element;
+    }, []);
+
+    //  DragOver for column
+    const handleColumnDragOver = useCallback((e, colId) => {
         e.preventDefault();
         const columnEl = columnRefs.current[colId];
         if (!columnEl) return;
@@ -349,9 +168,10 @@ export default function ColumnNotes() {
         } else {
             columnEl.insertBefore(blueLineRef.current, afterElement);
         }
-    }
+    }, [getDragAfterElement]);
 
-    async function handleColumnDrop(e, colId) {
+    //  Drop for column
+    const handleColumnDrop = useCallback((e, colId) => {
         e.preventDefault();
         const noteId = e.dataTransfer.getData('text/plain');
         if (!noteId) return;
@@ -360,437 +180,145 @@ export default function ColumnNotes() {
         const afterElement = getDragAfterElement(columnEl, e.clientY);
         const afterId = afterElement ? afterElement.dataset.id : null;
 
-        setNotes(prevNotes => {
-            const copy = [...prevNotes];
-            const movedIndex = copy.findIndex(n => n.id.toString() === noteId.toString());
-            if (movedIndex === -1) return prevNotes;
-            const [moved] = copy.splice(movedIndex, 1);
-            moved.status = colId;
+        // Обновляем позицию заметки в локальном состоянии
+        const copy = [...state.notes];
+        const movedIndex = copy.findIndex(n => n.id.toString() === noteId.toString());
+        if (movedIndex === -1) return;
 
-            if (afterId) {
-                const afterIdx = copy.findIndex(n => n.id.toString() === afterId.toString());
-                const insertAt = afterIdx === -1 ? (() => {
-                    let last = -1;
-                    copy.forEach((n, i) => { if (n.status === colId) last = i; });
-                    return last === -1 ? copy.length : last + 1;
-                })() : afterIdx;
-                copy.splice(insertAt, 0, moved);
-            } else {
+        const [moved] = copy.splice(movedIndex, 1);
+        moved.status = colId;
+
+        if (afterId) {
+            const afterIdx = copy.findIndex(n => n.id.toString() === afterId.toString());
+            const insertAt = afterIdx === -1 ? (() => {
                 let last = -1;
                 copy.forEach((n, i) => { if (n.status === colId) last = i; });
-                const insertAt = last === -1 ? copy.length : last + 1;
-                copy.splice(insertAt, 0, moved);
-            }
+                return last === -1 ? copy.length : last + 1;
+            })() : afterIdx;
+            copy.splice(insertAt, 0, moved);
+        } else {
+            let last = -1;
+            copy.forEach((n, i) => { if (n.status === colId) last = i; });
+            const insertAt = last === -1 ? copy.length : last + 1;
+            copy.splice(insertAt, 0, moved);
+        }
 
-            updateNoteStatus(moved.id, colId);
-
-            return copy;
-        });
+        dispatch({ type: ACTIONS.SET_NOTES, payload: copy });
+        notesAPI.updateNoteStatus(moved.id, colId);
 
         if (blueLineRef.current && blueLineRef.current.parentNode) {
             blueLineRef.current.parentNode.removeChild(blueLineRef.current);
         }
-    }
+    }, [state.notes, getDragAfterElement, notesAPI]);
 
-    function handleNoteDragStart(e, note) {
+    // Start drg&drp
+    const handleNoteDragStart = useCallback((e, note) => {
         e.dataTransfer.setData('text/plain', note.id.toString());
-        setDraggingId(note.id.toString());
+        dispatch({ type: ACTIONS.SET_DRAGGING_ID, payload: note.id.toString() });
         e.currentTarget.classList.add('dragging');
-    }
+    }, []);
 
-    function handleNoteDragEnd(e) {
-        setDraggingId(null);
+    // End drg&drp
+    const handleNoteDragEnd = useCallback((e) => {
+        dispatch({ type: ACTIONS.SET_DRAGGING_ID, payload: null });
         e.currentTarget.classList.remove('dragging');
+
         if (blueLineRef.current && blueLineRef.current.parentNode) {
             blueLineRef.current.parentNode.removeChild(blueLineRef.current);
         }
-    }
+    }, []);
 
-    const notStartedNotes = notes.filter(note => note.status === 'not_started');
-    const inProgressNotes = notes.filter(note => note.status === 'in_progress');
-    const doneNotes = notes.filter(note => note.status === 'done');
-
-    async function deleteNotes(noteId) {
-        try {
-            const response = await fetch(`http://localhost:3001/notes/delete/${noteId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            if (response.ok) {
-                setNotes(prev => prev.filter(n => n.id !== noteId));
-            } else {
-                console.error('Ошибка при удалении');
+    const handleStartEditing = useCallback((note) => {
+        dispatch({
+            type: ACTIONS.START_EDITING,
+            payload: {
+                id: note.id,
+                title: note.title,
+                content: note.content
             }
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    async function saveEditedNote() {
-        try {
-            const response = await fetch(`http://localhost:3001/notes/update/${editingNoteId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ title: editingTitle, content: editingContent })
-            });
-
-            if (!response.ok) {
-                console.error("Ошибка при редактировании");
-            }
-
-            const data = await response.json()
-
-            setNotes(prev => prev.map(n => n.id.toString() === editingNoteId ? data.note : n));
-            setEditingNoteId(null);
-            setEditingTitle('');
-            setEditingContent('');
-
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    function startEditing(note) {
-        setEditingNoteId(note.id.toString());
-        setEditingTitle(note.title);
-        setEditingContent(note.content);
-    }
-
-    const outsSaveRef = useRef(null)
-
-    useEffect(() => {
-        function handleOutsideClickSave(event) {
-            if (editingNoteId && outsSaveRef.current && !outsSaveRef.current.contains(event.target)) {
-                saveEditedNote();
-                cancelEditing();
-            }
-        }
-
-        if (editingNoteId) {
-            document.addEventListener("mousedown", handleOutsideClickSave);
-        }
-
-        return () => {
-            document.removeEventListener("mousedown", handleOutsideClickSave);
-        };
-    }, [editingNoteId, saveEditedNote, cancelEditing]);
-
-    function cancelEditing() {
-        setEditingNoteId(null);
-        setEditingTitle('');
-        setEditingContent('');
-    }
-
-    async function deleteNoteTag(noteId, tagId) {
-        console.log("Frontend deleteNoteTag:", { noteId, tagId, typeof: typeof tagId });
-        try {
-            const response = await fetch(`http://localhost:3001/notes/delete/${noteId}/tags/${tagId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-
-                setNotes(prev =>
-                    prev.map(note =>
-                        note.id === noteId
-                            ? { ...note, tags: note.tags.filter(t => t.id !== tagId) }
-                            : note
-                    )
-                );
-            } else {
-                console.error('Error when deleting a tag');
-            }
-
-            await fetchTags(); 
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    // ===================== RENDER ======================== //
-    function renderNotesColumn(columnNotes) {
-        return columnNotes.map((note) => (
-            <div
-                className="note"
-                key={note.id}
-                data-id={note.id}
-                draggable={editingNoteId?.toString() !== note.id.toString()}
-                onDragStart={(e) => handleNoteDragStart(e, note)}
-                onDragEnd={(e) => handleNoteDragEnd(e)}
-                onClick={() => setSelectedNoteId(note.id)}
-            >
-                {editingNoteId?.toString() === note.id.toString() ? (
-                    <div ref={outsSaveRef}>
-                        <input
-                            type="text"
-                            placeholder="Enter title..."
-                            value={editingTitle}
-                            onChange={(e) => setEditingTitle(e.target.value)}
-                            id="new_note_inputTitle"
-                            onClick={(e) => e.stopPropagation()}
-                            autoFocus
-                        />
-                        <input
-                            type="text"
-                            placeholder="Enter a note..."
-                            value={editingContent}
-                            onChange={(e) => setEditingContent(e.target.value)}
-                            id="new_note_input"
-                            onClick={(e) => e.stopPropagation()}
-                        />
-                        <div className="editContainerButton">
-                            <button className='saveEditingButton' onClick={(e) => {
-                                e.stopPropagation()
-                                saveEditedNote()
-                            }}>Save
-                            </button>
-                            <button className='cancelEditingButton' onClick={(e) => {
-                                e.stopPropagation()
-                                cancelEditing()
-                            }}>Cancel</button>
-                        </div>
-                    </div>) : (
-                    <>
-                        <div className="btnsContainer">
-                            <button id='btnEdit' onClick={(e) => {
-                                e.stopPropagation()
-                                startEditing(note)
-                            }}>Edit</button>
-                            <button id='btnDelete' onClick={(e) => {
-                                e.stopPropagation()
-                                deleteNotes(note.id)
-                            }
-                            }>×</button>
-                        </div>
-                        <h5 className='titleNoteText'>{note.title}</h5>
-                        <p>{note.content}</p>
-                        <div className="tagsBlock">
-                            {note.tags && note.tags.length > 0 && (
-                                <>
-                                    <div className="tagsList">
-                                        {note.tags.map((tag) => (
-                                            <div key={tag.id} className="oneTagItem">
-                                                <span className="tagItem">#{tag.name}</span>
-                                                <button onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    deleteNoteTag(note.id, tag.id)
-                                                }} className='deleteTagBtn'>×</button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-
-
-                            {addingTagNoteId === note.id ? (
-                                <div className="addTagForm" ref={windowTagRef}>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter the tag..."
-                                        value={newTag}
-                                        onChange={(e) => setNewTag(e.target.value)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        autoFocus
-                                        className='inputTagName'
-                                    />
-
-                                    {allTags.length > 0 && (
-                                        <div className="tagsDropdown">
-                                            {allTags.map((tag, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="tagOption"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setNewTag(tag);
-                                                    }}
-                                                >
-                                                    #{tag}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                    <div className="blockTagsBtns">
-                                        <button
-                                            className='btnSaveTag'
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                addNewTag(note.id);
-                                            }}
-                                        >
-                                            Save
-                                        </button>
-                                        <button
-                                            className='btnCloseTagWindow'
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setAddingTagNoteId(null);
-                                                setNewTag('');
-                                            }}
-                                        >
-                                            ✖
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <button
-                                    id="btnAddTags"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setAddingTagNoteId(note.id);
-                                    }}
-                                >
-                                    + Add Tag
-                                </button>
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
-        ));
-    }
-
-    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(() => {
-        return localStorage.getItem("isLeftPanelOpen") === "true";
-    });
-
-    function toggleLeftPanel() {
-        setIsLeftPanelOpen(prev => {
-            localStorage.setItem("isLeftPanelOpen", !prev);
-            return !prev;
         });
-    }
+    }, []);
+
+    const handleCancelEditing = useCallback(() => {
+        dispatch({ type: ACTIONS.CANCEL_EDITING });
+    }, []);
+
 
     return (
         <>
             <Header
-                isWeather={isWeather}
-                toggleWeather={toggleSwapWeather}
-                city={city}
-                setCity={setCity}
-                getCityWeather={getCityWeather}
-                weatherData={weatherData}
-                loading={loading}
-                error={error}
-                setError={setError}
-                setWeatherData={setWeatherData}
-                toggleDarkTheme={toggleDarkTheme}
-                darkTheme={darkTheme}
-                toggleLeftPanel={toggleLeftPanel}
+                isWeather={state.weather.isVisible}
+                toggleWeather={() => dispatch({ type: ACTIONS.TOGGLE_WEATHER })}
+                city={state.weather.city}
+                setCity={(city) => dispatch({ type: ACTIONS.SET_WEATHER_CITY, payload: city })}
+                getCityWeather={weatherAPI.getCityWeather}
+                weatherData={state.weather.data}
+                loading={state.weather.loading}
+                error={state.weather.error}
+                setError={(error) => dispatch({ type: ACTIONS.SET_WEATHER_ERROR, payload: error })}
+                setWeatherData={(data) => dispatch({ type: ACTIONS.SET_WEATHER_DATA, payload: data })}
+                toggleDarkTheme={() => dispatch({ type: ACTIONS.TOGGLE_DARK_THEME })}
+                darkTheme={state.ui.darkTheme}
+                toggleLeftPanel={() => dispatch({ type: ACTIONS.TOGGLE_LEFT_PANEL })}
             />
 
             <div className="note_panel">
                 <div className="left_panel">
-                    <TogglePanel isOpen={isLeftPanelOpen} /> 
+                    <TogglePanel isOpen={state.ui.leftPanelOpen} />
                 </div>
-
 
                 <div className="note_container">
-
-                    <div
-                        id="not_started"
-                        className="note_column note_notstarted"
-                        ref={el => columnRefs.current['not_started'] = el}
-                        onDragOver={(e) => handleColumnDragOver(e, 'not_started')}
-                        onDrop={(e) => handleColumnDrop(e, 'not_started')}
-                    >
-                        <div className="groundTitle_notStarted"><p>○ Not Started {notStartedNotes.length}</p></div>
-
-                        {renderNotesColumn(notStartedNotes)}
-
-                        {isAdding.not_started ? (
-                            <div className="note_wrapper_notStarted" ref={addingRef}>
-                                <div id='inputsContainer_notStarted'>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter a title..."
-                                        value={newTitle}
-                                        onChange={(e) => setNewTitle(e.target.value)}
-                                        id="new_note_inputTitle"
-                                        autoFocus
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Enter a note..."
-                                        value={newContent}
-                                        onChange={(e) => setNewContent(e.target.value)}
-                                        id="new_note_input"
-                                    />
-                                </div>
-                                <button onClick={() => addNote("not_started")} id='saveBtn_notStarted'>Save</button>
-                            </div>
-                        ) : (
-                            <button className="add_button" id='add_note_notstarted' onClick={() => toggleAdding("not_started")}>+ Add Note</button>
-                        )}
-                    </div>
-
-                    <div
-                        id="in_progress"
-                        className="note_column note_inprogress"
-                        ref={el => columnRefs.current['in_progress'] = el}
-                        onDragOver={(e) => handleColumnDragOver(e, 'in_progress')}
-                        onDrop={(e) => handleColumnDrop(e, 'in_progress')}
-                    >
-                        <div className="groundTitle_inProgress"><p>○ In progress {inProgressNotes.length}</p></div>
-
-                        {renderNotesColumn(inProgressNotes)}
-
-                        {isAdding.in_progress ? (
-                            <div className="note_wrapper_InProgress" ref={addingRef}>
-                                <div id='inputsContainer_InProgress'>
-                                    <input type="text" placeholder="Введите заголовок..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} id="new_note_inputTitle" autoFocus />
-                                    <input type="text" placeholder="Введите заметку..." value={newContent} onChange={(e) => setNewContent(e.target.value)} id="new_note_input" />
-                                </div>
-                                <button onClick={() => addNote("in_progress")} id='saveBtn_inProgress'>Save</button>
-                            </div>
-                        ) : (
-                            <button className="add_button" id='add_note_inprogress' onClick={() => toggleAdding("in_progress")}>+ Add Note</button>
-                        )}
-                    </div>
-
-                    <div
-                        id="done"
-                        className="note_column note_done"
-                        ref={el => columnRefs.current['done'] = el}
-                        onDragOver={(e) => handleColumnDragOver(e, 'done')}
-                        onDrop={(e) => handleColumnDrop(e, 'done')}
-                    >
-                        <div className="groundTitle_Done"><p>○ Done {doneNotes.length}</p></div>
-
-                        {renderNotesColumn(doneNotes)}
-
-                        {isAdding.done ? (
-                            <div className="note_wrapper_Done" ref={addingRef}>
-                                <div id='inputsContainer_Done'>
-                                    <input type="text" placeholder="Enter a title..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} id="new_note_inputTitle" autoFocus />
-                                    <input type="text" placeholder="Enter a note..." value={newContent} onChange={(e) => setNewContent(e.target.value)} id="new_note_input" />
-                                </div>
-                                <button onClick={() => addNote("done")} id='saveBtn_Done'>Save</button>
-                            </div>
-                        ) : (
-                            <button className="add_button" id='add_note_done' onClick={() => toggleAdding("done")}>+ Add Note</button>
-                        )}
-                    </div>
+                    {COLUMNS.map(column => (
+                        <NoteColumn
+                            key={column.id}
+                            column={column}
+                            notes={notesByColumn[column.id]}
+                            isAdding={state.isAdding[column.id]}
+                            newTitle={state.newNote.title}
+                            newContent={state.newNote.content}
+                            editingNoteId={state.editing.noteId}
+                            editingTitle={state.editing.title}
+                            editingContent={state.editing.content}
+                            allTags={state.tags.all}
+                            newTag={state.tags.newTag}
+                            addingTagNoteId={state.tags.addingToNoteId}
+                            columnRef={el => columnRefs.current[column.id] = el}
+                            addingRef={addingRef}
+                            outsSaveRef={outsSaveRef}
+                            windowTagRef={windowTagRef}
+                            onToggleAdding={() => dispatch({ type: ACTIONS.TOGGLE_ADDING, payload: column.id })}
+                            onSetNewTitle={(title) => dispatch({ type: ACTIONS.SET_NEW_TITLE, payload: title })}
+                            onSetNewContent={(content) => dispatch({ type: ACTIONS.SET_NEW_CONTENT, payload: content })}
+                            onAddNote={() => notesAPI.addNote(column.id)}
+                            onStartEditing={handleStartEditing}
+                            onUpdateEditingTitle={(title) => dispatch({ type: ACTIONS.UPDATE_EDITING_TITLE, payload: title })}
+                            onUpdateEditingContent={(content) => dispatch({ type: ACTIONS.UPDATE_EDITING_CONTENT, payload: content })}
+                            onSaveEditing={notesAPI.saveEditedNote}
+                            onCancelEditing={handleCancelEditing}
+                            onDeleteNote={notesAPI.deleteNote}
+                            onSetNewTag={(tag) => dispatch({ type: ACTIONS.SET_NEW_TAG, payload: tag })}
+                            onSetAddingTagNoteId={(id) => dispatch({ type: ACTIONS.SET_ADDING_TAG_NOTE_ID, payload: id })}
+                            onAddNewTag={(noteId) => tagsAPI.addNewTag(noteId, state.tags.newTag)}
+                            onDeleteTag={tagsAPI.deleteNoteTag}
+                            onSelectNote={(id) => dispatch({ type: ACTIONS.SET_SELECTED_NOTE, payload: id })}
+                            onDragStart={handleNoteDragStart}
+                            onDragEnd={handleNoteDragEnd}
+                            onDragOver={handleColumnDragOver}
+                            onDrop={handleColumnDrop}
+                        />
+                    ))}
                 </div>
             </div>
-            {selectedNoteId && (
+
+            {state.ui.selectedNoteId && (
                 <ItemsModal
-                    key={selectedNoteId}
-                    noteId={selectedNoteId}
+                    key={state.ui.selectedNoteId}
+                    noteId={state.ui.selectedNoteId}
                     token={token}
-                    onClose={() => setSelectedNoteId(null)}
+                    onClose={() => dispatch({ type: ACTIONS.SET_SELECTED_NOTE, payload: null })}
                 />
             )}
         </>
     )
 }
+

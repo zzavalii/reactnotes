@@ -8,6 +8,7 @@ import VanilaNotes from './components/vanilanotes/VanilaNotes'
 import Introduce from './components/introduce/introduce';
 import ReminderManager from './components/ReminderManager/ReminderManager'; 
 import SortedTagsPage from './components/SortedTagsPage/SortedTagsPage';
+import FocusMode from './components/focusmode/FocusMode';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/notes" element={<ColumnNotes/>}/>
           <Route path="/overview" element={<Overview/>}/>
           <Route path="/vanila" element={<VanilaNotes/>}/>
+          <Route path="/focusmode" element={<FocusMode/>}/>
         </Routes>
       </BrowserRouter>
     </>
