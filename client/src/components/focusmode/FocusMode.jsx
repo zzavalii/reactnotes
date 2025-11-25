@@ -1,14 +1,5 @@
 import { useReducer, useEffect, useRef, useMemo, useCallback, useState } from 'react';
 import './FocusMode.css';
-// import Header from '../header/header';
-
-
-// import TogglePanel from '../togglePanel/TogglePanel';
-
-// import { notesReducer, initialState, ACTIONS } from './notes/store/notesReducer';
-// import { useNotes } from './hooks/useNotes';
-// import { useTags } from './hooks/useTags';
-// import { useWeather } from './hooks/useWeather';
 
 export default function FocusMode() {
     const [notes, setNotes] = useState([]);
