@@ -34,12 +34,12 @@ export default function ReminderForm({ noteId, token }) {
                 body: JSON.stringify(body),
             });
 
-            if (!res.ok) throw new Error("Не удалось сохранить напоминание");
-            alert("✅ Напоминание сохранено!");
-            // onClose?.();
+            if (!res.ok) throw new Error("Failed to save reminder");
+            // alert("Reminder saved!");
+            onClose?.();
         } catch (err) {
             console.error(err);
-            alert("❌ Ошибка при сохранении");
+            alert("Error while saving");
         } finally {
             setLoading(false);
         }

@@ -183,10 +183,7 @@ export default function ItemsModal({ noteId, token, onClose }) {
     }
     // ---- Drag & Drop ---- //
 
-
-    // ---- сохранение контента айтема (с дебаунсом) ----
     function handleContentChange(id, value) {
-        // обновляем локальный стейт сразу
         setItems(prev => prev.map(item => item.item_id === id ? { ...item, content: value } : item));
 
         const map = saveTimeoutsRef.current;

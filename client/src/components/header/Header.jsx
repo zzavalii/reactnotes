@@ -40,11 +40,12 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
 
     useEffect(() => {
         if (darkTheme) {
-            document.body.classList.add("dark")
+            document.body.classList.add("darker")
         } else {
-            document.body.classList.remove("dark")
+            document.body.classList.remove("darker")
         }
     }, [darkTheme])
+
 
     return (
         <header className="p-1 mb-1 border-bottom">

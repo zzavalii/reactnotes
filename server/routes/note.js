@@ -25,7 +25,7 @@ router.post("/newnote", authenticateToken, async (req, res) => {
 
     } catch (err) {
         console.error("Error adding note:", err);
-        res.status(500).json({ message: "❌ Server error" });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -39,7 +39,7 @@ router.get('/usernotes', authenticateToken, async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "❌ Server error" });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -61,7 +61,7 @@ router.put('/notes/:id/status', authenticateToken, async (req, res) => {
         res.json({ updatedNote: updatedNote })
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "❌ Error fetching notes" });
+        res.status(500).json({ message: "Error fetching notes" });
     }
 })
 
@@ -83,7 +83,6 @@ router.delete('/notes/delete/:id', authenticateToken, async (req, res) => {
             return res.status(404).json({ message: "Note not found" });
         }
 
-        // await db.query(`DELETE FROM notesitem WHERE note_id = ?`, [noteId]);
         await db.query(`DELETE FROM notes WHERE id = ?`, [noteId]);
 
         await db.query('COMMIT');
@@ -92,7 +91,7 @@ router.delete('/notes/delete/:id', authenticateToken, async (req, res) => {
     } catch (err) {
         await db.query('ROLLBACK');
         console.error(err);
-        res.status(500).json({ message: "❌ Error deleting note and its items" });
+        res.status(500).json({ message: "Error deleting note and its items" });
     }
 });
 

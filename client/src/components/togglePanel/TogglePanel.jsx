@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function TogglePanel ({isOpen}) {
+export default function TogglePanel ({isOpen, darkTheme}) {
     const userInfoRef = useRef(null);
     const [isUserInfo, setUserInfo] = useState(false);
     const [isUserPanel, setUserPanel] = useState(false);
@@ -52,15 +52,16 @@ export default function TogglePanel ({isOpen}) {
             }
         }, [isUserInfo])
 
+
     return (
-        <div className={`TogglePanelBlock ${isOpen ? 'open' : ''}`}>
+        <div className={`TogglePanelBlock ${isOpen ? 'open' : ''} ${darkTheme ? 'dark' : ''}`}>
             {isOpen && (
                 <>
                     <div className="allToggleList">
                         <div className="infoAccountEmail">
-                            <div className="userEmailInfo" onClick={handlerUserPanel}>
+                            <div className={`userEmailInfo ${darkTheme ? 'darkUser' : ''}`} onClick={handlerUserPanel}>
                                 <div className="avatar">{firstLetter}</div>
-                                {userEmail}
+                                <span>{userEmail}</span>
                             </div>
                         </div>
                             {isUserPanel && 
@@ -72,16 +73,18 @@ export default function TogglePanel ({isOpen}) {
                                 </>
                             }
 
-                        <div className="list">
+                        <div className={`list ${darkTheme ? 'darkList' : ''}`}>
                             <Link className="divButtonTagsGroup" to="/pagetags">
                                 <div>
                                     Sorted tags
                                 </div>
+                                <div className="newBlockAdded">New*</div>
                             </Link>
                             <Link className="divButtonTagsGroup" to="/focusmode">
                                 <div>
                                     Focus mode ⏱
                                 </div>
+                                <div className="newBlockAdded">New*</div>
                             </Link>
                             <Link className="divButtonTagsGroup" to="/viewcalendar">
                                 <div>

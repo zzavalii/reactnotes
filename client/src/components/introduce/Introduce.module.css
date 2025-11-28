@@ -2,18 +2,18 @@ html {
     scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar {
+.bodyIntroduce::-webkit-scrollbar {
     width: 10px;           
     height: 10px;    
     background-color: #7b8dc5;  
 }
 
-::-webkit-scrollbar-thumb {
+.bodyIntroduce::-webkit-scrollbar-thumb {
     background-color: rgb(84, 85, 174);  
     border-radius: 10px;       
 }
 
-::-webkit-scrollbar-thumb:hover {
+.bodyIntroduce::-webkit-scrollbar-thumb:hover {
     background-color: rgb(15, 33, 124);  
 }
 
@@ -129,7 +129,7 @@ html {
 }
 
 .container1 {
-    height: 120vh;
+    height: 130vh; 
     background: linear-gradient(120deg, #e2e6eb, #a5b4fc, #b7cfed);
     background-size: 300% 300%;
     animation: gradientShift 8s ease infinite;
@@ -393,11 +393,11 @@ html {
     transform: translateY(0);
 }
 
-.darkIntroduce .signInBtn,
-.darkIntroduce .signUpBtn,
-.darkIntroduce .container1_underform,
-.darkIntroduce .container1,
-.darkIntroduce .headerContainerIntroduce{
+.signInBtn.darkIntroduce,
+.signUpBtn.darkIntroduce ,
+.container1_underform.darkIntroduce ,
+.container1.darkIntroduce,
+.headerContainerIntroduce.darkIntroduce {
     background: linear-gradient(120deg, #0e1525, #5390db);
     color: #f1f1f1;
     transition: background 0.3s, color 0.3s;

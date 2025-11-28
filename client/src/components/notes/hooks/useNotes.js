@@ -104,7 +104,7 @@ export function useNotes(state, dispatch, token) {
             });
 
             if (!response.ok) {
-                console.error("Ошибка при редактировании");
+                console.error("Error while editing");
                 return;
             }
 
@@ -135,7 +135,7 @@ export function useNotes(state, dispatch, token) {
             if (response.ok) {
                 dispatch({ type: ACTIONS.DELETE_NOTE, payload: noteId });
             } else {
-                console.error('Ошибка при удалении');
+                console.error('Error while delete');
             }
         } catch (err) {
             console.error('Error deleting note:', err);

@@ -1,5 +1,6 @@
 import './ColumnsNote.css';
-import { useReducer, useEffect, useRef, useMemo, useCallback } from 'react';
+
+import { useReducer, useEffect, useRef, useMemo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../header/header';
 import ItemsModal from '../modal/ItemsModal';
@@ -36,6 +37,27 @@ export default function ColumnNotes() {
     const windowTagRef = useRef(null);
     const outsSaveRef = useRef(null);
 
+    //dark theme
+        const [darkTheme, setDarkTheme] = useState(() => {
+            return localStorage.getItem("darkTheme") === 'true'; 
+        })
+    
+        useEffect(() => {
+            if (darkTheme) {
+                document.body.classList.add("darker");
+            } else {
+                document.body.classList.remove("darker");
+            }
+        }, [darkTheme]);
+    
+        function toggleDarkTheme() {
+            setDarkTheme(prev => {
+                const newTheme = !prev;
+                localStorage.setItem("darkTheme", newTheme);  
+                return newTheme;
+            });
+        }
+    
     //unlogin
     useEffect(() => {
         if (!token || !isLoggedIn) {
@@ -257,14 +279,17 @@ export default function ColumnNotes() {
                 error={state.weather.error}
                 setError={(error) => dispatch({ type: ACTIONS.SET_WEATHER_ERROR, payload: error })}
                 setWeatherData={(data) => dispatch({ type: ACTIONS.SET_WEATHER_DATA, payload: data })}
-                toggleDarkTheme={() => dispatch({ type: ACTIONS.TOGGLE_DARK_THEME })}
-                darkTheme={state.ui.darkTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                darkTheme={darkTheme}
                 toggleLeftPanel={() => dispatch({ type: ACTIONS.TOGGLE_LEFT_PANEL })}
             />
 
             <div className="note_panel">
                 <div className="left_panel">
-                    <TogglePanel isOpen={state.ui.leftPanelOpen} />
+                    <TogglePanel 
+                        isOpen={state.ui.leftPanelOpen} 
+                        darkTheme={darkTheme}
+                    />
                 </div>
 
                 <div className="note_container">

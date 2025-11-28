@@ -10,7 +10,7 @@ export default function ReminderManager() {
 
     function playNotificationSound() {
         const audio = new Audio("/sound/confident-543.ogg");
-        audio.play().catch(err => console.error("Ошибка воспроизведения звука:", err));
+        audio.play().catch(err => console.error("Error playing sound:", err));
     }
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export default function ReminderManager() {
                     }
                 }
             } catch (error) {
-                console.error("Ошибка проверки напоминаний:", error);
+                console.error("Reminder verification error:", error);
             }
         };
 

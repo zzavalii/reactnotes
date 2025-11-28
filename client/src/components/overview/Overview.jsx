@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useReducer } from "react"
 import Header from "../header/header";
 import { useNavigate } from 'react-router-dom';
 import styles from './Overview.module.css'
@@ -33,14 +33,26 @@ export default function Overview() {
     const containerRef = useRef(null);
     const notesRef = useRef({});
 
-
     //dark theme
     const [darkTheme, setDarkTheme] = useState(() => {
-        const savedTheme = localStorage.getItem("darkTheme");
-        if (savedTheme === 'true') {
-            return savedTheme;
-        }
+        return localStorage.getItem("darkTheme") === 'true'; 
     })
+
+    useEffect(() => {
+        if (darkTheme) {
+            document.body.classList.add("darker");
+        } else {
+            document.body.classList.remove("darker");
+        }
+    }, [darkTheme]);
+
+    function toggleDarkTheme() {
+        setDarkTheme(prev => {
+            const newTheme = !prev;
+            localStorage.setItem("darkTheme", newTheme);  
+            return newTheme;
+        });
+    }
     // -- All useStates --
 
     const navigate = useNavigate();
@@ -51,12 +63,6 @@ export default function Overview() {
         setWeather(prev => !prev);
     }
 
-    function toggleDarkTheme() {
-        setDarkTheme(prev => {
-            localStorage.setItem("darkTheme", !prev);
-            return !prev;
-        });
-    }
 
     async function getCityWeather() {
         if (!city.trim()) {
@@ -90,7 +96,7 @@ export default function Overview() {
             if (response.ok) {
                 setNotes(prev => prev.filter(n => n.id !== noteId));
             } else {
-                console.error('Ошибка при удалении');
+                console.error('Error during delete');
             }
         } catch (err) {
             console.error(err);
@@ -109,7 +115,7 @@ export default function Overview() {
             });
 
             if (!response.ok) {
-                console.error("Ошибка при редактировании");
+                console.error("Error while editing");
             }
 
             const data = await response.json()
@@ -151,7 +157,7 @@ export default function Overview() {
                 navigate("/login");
             }
         } catch (err) {
-            console.error("Невалидный токен", err);
+            console.error("Invalid token", err);
             localStorage.removeItem("token");
             localStorage.setItem("isLoggedIn", "false");
             navigate("/login");
@@ -165,7 +171,7 @@ export default function Overview() {
                 const response = await fetch("http://localhost:3001/usernotes", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (!response.ok) throw new Error("Ошибка сервера");
+                if (!response.ok) throw new Error("Server error");
                 const data = await response.json();
                 setNotes(data.notes);
             } catch (err) {
@@ -218,10 +224,8 @@ export default function Overview() {
         el.style.left = x + "px";
         el.style.top = y + "px";
 
-        // сохраняем позицию
         localStorage.setItem(`note-pos-${noteId}`, JSON.stringify({ x, y }));
 
-        // фиксация — иногда помогает, если браузер сбрасывает offset
         el.draggable = false;
         setTimeout(() => { el.draggable = true; }, 0);
     };
@@ -300,15 +304,14 @@ export default function Overview() {
                 },
                 body: JSON.stringify({ title, content, status })
             });
-            if (!response.ok) throw new Error("Ошибка сервера");
+            if (!response.ok) throw new Error("Server error");
             const data = await response.json();
             setNotes(prev => [...prev, data.note]);
         } catch (err) {
             console.error(err);
-            alert("❌ Не удалось сохранить заметку");
+            alert("Failed to save note");
         }
     }
-
 
     function addNote(status) {
         if (!newTitle.trim() && !newContent.trim()) {
@@ -359,7 +362,7 @@ export default function Overview() {
             });
 
             if (!response.ok) {
-                console.error("Ошибка при редактировании");
+                console.error("Error while editing");
             }
 
             const data = await response.json()
@@ -466,7 +469,10 @@ export default function Overview() {
                 onDrop={handleDrop}
             >
                 <div className="left_panel">
-                    <TogglePanel isOpen={isLeftPanelOpen} /> 
+                    <TogglePanel 
+                        isOpen={isLeftPanelOpen} 
+                        darkTheme={darkTheme}    
+                    /> 
                 </div>
                 {notes.map((note) => (
                     <div

@@ -86,6 +86,14 @@ body {
     border-radius: 0.5rem;
     overflow-wrap: break-word; 
     white-space: normal; 
+    border: 2px solid transparent;
+    transition: 0.3s all ease;
+}
+
+.note:hover{
+    transform: translateY(2px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    border-color: #6b9bd1;
 }
 
 .titleNoteText{
@@ -129,6 +137,7 @@ body {
 
 #btnEdit:hover {
     background-color: rgba(192, 186, 151, 0.817);
+    transition: 0.3s all ease;
 }
 
 #btnOpenItemWindow {
@@ -151,6 +160,7 @@ body {
 
 #btnOpenItemWindow:hover {
     background-color: rgba(70, 231, 218, 0.817);
+    transition: 0.3s all ease;
 }
 
 .note_header {
@@ -219,11 +229,13 @@ button#add_note_not_started {
 button#add_note_not_started:hover {
     background: rgb(197, 194, 194);
     transform: translate(0, 0.15em);
+    transition: 0.3s all ease;
 }
 
 button#saveBtn_notStarted:hover {
     background: rgb(197, 194, 194);
     transform: translate(0, 0.15em);
+    transition: 0.3s all ease;
 }
 
 /* ========== Заметки в процессе ========== */
@@ -259,11 +271,13 @@ button#add_note_in_progress {
 button#add_note_in_progress:hover {
     background: rgb(197, 138, 239);
     transform: translate(0, 0.15em);
+    transition: 0.3s all ease;
 }
 
 button#saveBtn_inProgress:hover {
     background: rgb(138, 194, 239);
     transform: translate(0, 0.15em);
+    transition: 0.3s all ease;
 }
 
 /* ========== Заметки выполненные ========== */
@@ -299,10 +313,12 @@ button#add_note_done {
 button#add_note_done:hover {
     background: rgb(174, 235, 168);
     transform: translate(0, 0.15em);
+    transition: 0.3s all ease;
 }
 button#saveBtn_Done:hover {
     background: rgb(80, 243, 88);
     transform: translate(0, 0.15em);
+    transition: 0.3s all ease;
 }
 
 /* Общие контейнеры для 3 блоков */

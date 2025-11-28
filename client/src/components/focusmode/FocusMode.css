@@ -1,18 +1,9 @@
 /* Container */
 .focus-mode-container {
     min-height: 100vh;
-    background-color: #f5f3ef;
+    /* background-color: #f5f3ef; */
     padding: 2rem;
     font-family: system-ui, -apple-system, sans-serif;
-}
-
-/* Title */
-.focus-mode-title {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 2.5rem;
-    color: #2c2c2c;
-    font-weight: 700;
 }
 
 /* Loading State */
@@ -29,6 +20,7 @@
 .notes-grid {
     max-width: 1200px;
     margin: 0 auto;
+    margin-top: 3rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
@@ -86,8 +78,8 @@
     text-transform: capitalize;
 }
 
-.status-completed {
-    background-color: #d4edda;
+.status-done {
+    background-color: #0fc63a;
     color: #155724;
 }
 
@@ -221,7 +213,7 @@
 
 .status-select:focus {
     outline: none;
-    border-color: #6b9bd1;
+    border-color: #87b5e9;
 }
 
 /* Note Content */
@@ -328,8 +320,145 @@
 
 .timer-button.start {
     flex: 1;
-    background-color: #28a745;
+    background-color: rgb(113, 199, 215);
 }
 
 .timer-button.start:hover {
-    back
+    background-color: rgb(142, 211, 175);
+    transform: translateY(-2px);
+}
+
+.timer-button.pause {
+    flex: 1;
+    background-color: #ffc107;
+}
+
+.timer-button.pause:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+}
+
+.timer-button.reset {
+    background-color: rgb(215, 215, 215);
+}
+
+.timer-button.reset:hover {
+    background-color: rgb(197, 157, 157);
+    transform: translateY(-2px);
+}
+
+.timer-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.timer-button:disabled:hover {
+    transform: none;
+}
+
+.timer-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .focus-mode-container {
+        padding: 1rem;
+    }
+
+    .focus-mode-title {
+        font-size: 2rem;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .modal-content {
+        flex-direction: column;
+        max-height: 95vh;
+    }
+
+    .modal-note-section {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+    }
+
+    .timers-panel {
+        width: 100%;
+        padding: 1.5rem;
+    }
+
+    .timer-display {
+        font-size: 2rem;
+    }
+}
+
+.timerTypePicker{
+    display: flex;
+    justify-content: center;
+}
+
+.timerButtonPicker{
+    background-color: rgb(215, 215, 215);
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 0.5rem 0rem 0rem 0.5rem;
+    transition: 0.3s all ease;
+}
+
+.stopwatchButtonPicker{
+    background-color: rgb(215, 215, 215);
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 0rem 0.5rem 0.5rem 0rem;
+    transition: 0.3s all ease;
+}
+
+.timerButtonPicker:hover,
+.stopwatchButtonPicker:hover{
+    transform: translateY(2px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    border-color: #6b9bd1;
+}
+
+.timerButtonPicker.active,
+.stopwatchButtonPicker.active{
+    background-color: rgb(113, 199, 215);
+}
+
+
+
+.back{
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    background-color: #c0d0c3;
+    border: 2px solid transparent;
+}
+
+.back:hover{
+    transform: translateY(3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-color: #6b9bd1;
+}
+
+.darkthemebutton {
+    padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+    background-color: #dfe9f1;
+    border-radius: 0.5rem;
+    border: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+
+.darkthemebutton:hover {
+    transition: 0.5s;
+    background-color: #8EA8C3;
+}

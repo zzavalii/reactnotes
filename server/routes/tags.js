@@ -91,35 +91,59 @@ router.delete("/notes/delete/:noteId/tags/:tagId", async (req, res) => {
     }
 });
 
-router.get("/allnote/tags", async(req, res) => {
+router.get('/allnote/tags', authenticateToken, async (req, res) => {
     try {
-        const [rows] = await db.query(`
+        const userId = req.user.userId;
+        
+        const query = `
             SELECT 
-                t.name AS tag_name,
-                n.id AS note_id,
-                n.title,
-                n.content
-            FROM tags t
-            JOIN note_tags nt ON nt.tag_id = t.id
-            JOIN notes n ON n.id = nt.note_id
-            ORDER BY t.name;
-        `);
-
-        const grouped = rows.reduce((acc, row) => {
-            if (!acc[row.tag_name]) acc[row.tag_name] = [];
-            acc[row.tag_name].push({
-                id: row.note_id,
-                title: row.title,
-                content: row.content
-            });
-            return acc;
-        }, {});
-
-        res.json(grouped);
+                n.id, 
+                n.title, 
+                n.content, 
+                n.status,
+                DATE_FORMAT(n.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
+                GROUP_CONCAT(t.name) as tags
+            FROM notes n
+            LEFT JOIN note_tags nt ON n.id = nt.note_id
+            LEFT JOIN tags t ON nt.tag_id = t.id
+            WHERE n.user_id = ?
+            GROUP BY n.id
+            ORDER BY n.created_at DESC
+        `;
+        
+        const [rows] = await db.query(query, [userId]);
+        
+        const taggedNotes = {};
+        
+        for (const note of rows) {
+            if (note.tags) {
+                const noteTags = note.tags.split(',');
+                
+                for (const tag of noteTags) {
+                    if (!taggedNotes[tag]) {
+                        taggedNotes[tag] = [];
+                    }
+                    
+                    const noteExists = taggedNotes[tag].some(n => n.id === note.id);
+                    if (!noteExists) {
+                        taggedNotes[tag].push({
+                            id: note.id,
+                            title: note.title,
+                            content: note.content,
+                            status: note.status,
+                            created_at: note.created_at 
+                        });
+                    }
+                }
+            }
+        }
+        
+        res.json(taggedNotes);
+        
     } catch (err) {
-        console.error("Error to get tags:", error);
-        res.status(500).json({ error: "Server error" });
+        console.error('Error fetching tagged notes:', err);
+        res.status(500).json({ message: "Server error" });
     }
-})
+});
 
 export default router;

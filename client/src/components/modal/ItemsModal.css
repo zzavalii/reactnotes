@@ -22,6 +22,19 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    transition: 0.3s all ease; 
+    animation: slideItemsModalUp 0.3s ease;
+}
+
+@keyframes slideItemsModalUp {
+    from {
+        opacity: 0;
+        transform: translateY(60px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
 }
 
 .blur-overlay {
@@ -31,8 +44,18 @@
     width: 100%;
     height: calc(100% - 70px);
     backdrop-filter: blur(6px);
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: 9998;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .hidden {

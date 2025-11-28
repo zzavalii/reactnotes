@@ -290,11 +290,12 @@ export function notesReducer(state, action){
         // ========= UI =========
         case ACTIONS.TOGGLE_DARK_THEME:
         const newDarkTheme = !state.ui.darkTheme;
+        
         localStorage.setItem("darkTheme", newDarkTheme);
             return {
                 ...state,
                 ui: { ...state.ui, darkTheme: newDarkTheme }
-            };
+            };    
         
         case ACTIONS.TOGGLE_LEFT_PANEL:
         const newPanelState = !state.ui.leftPanelOpen;
