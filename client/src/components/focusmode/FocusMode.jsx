@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useRef, useMemo, useCallback, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './FocusMode.css';
 
@@ -6,6 +6,7 @@ export default function FocusMode() {
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null);
     const [loading, setLoading] = useState(true);
+    const token = localStorage.getItem("token");
 
     // Timer state
     const [timerMinutes, setTimerMinutes] = useState(25);
@@ -22,7 +23,7 @@ export default function FocusMode() {
     const [timerType, setTimerType] = useState('timer');
 
     const buttonDarkThemeRef = useRef(null);
-
+    
     const [darkTheme, setDarkTheme] = useState(() => {
         return localStorage.getItem("darkTheme") === 'true'; 
     })
@@ -163,8 +164,8 @@ export default function FocusMode() {
 
             const data = await res.json();
             setNotes(prev => prev.map(n => n.id === noteId ? data.updatedNote : n));
-            if (selectedNote?.id === noteId) {
-                setSelectedNote(data.updatedNote);
+            if (selectedNote?.id === noteId) { 
+                setSelectedNote(data.updatedNote); 
             }
         } catch (err) {
             console.error(err);
@@ -172,8 +173,78 @@ export default function FocusMode() {
         }
     }
 
-    if (loading) {
-        return <div className="loading-container">Loading...</div>;
+    const [editingNoteId, setEditingNoteId] = useState(null);
+    const [editingTitle, setEditingTitle] = useState('');
+    const [editingContent, setEditingContent] = useState('');
+    const outsSaveRefTitle = useRef(null)
+    const outsSaveRefContent = useRef(null)
+
+    async function saveEditedNote() {
+        try {
+            const response = await fetch(`http://localhost:3001/notes/update/${editingNoteId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ title: editingTitle, content: editingContent })
+            });
+
+            if (!response.ok) {
+                console.error("Error while editing");
+            }
+
+            const data = await response.json();
+            const updated = data.updatedNote || data.note; 
+
+            setNotes(prev =>
+                prev.map(n => n.id.toString() === editingNoteId ? data.note : n)
+            );
+
+            if (selectedNote && selectedNote.id.toString() === editingNoteId) {
+                setSelectedNote(updated);
+            }
+
+            setEditingNoteId(null);
+            setEditingTitle('');
+            setEditingContent('');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    useEffect(() => {
+        function handleOutsideClickSave(event) {
+            if (editingNoteId) {
+                const clickedOutsideTitle = outsSaveRefTitle.current && !outsSaveRefTitle.current.contains(event.target);
+                const clickedOutsideContent = outsSaveRefContent.current && !outsSaveRefContent.current.contains(event.target);
+
+                if (clickedOutsideTitle && clickedOutsideContent) {
+                    saveEditedNote();
+                    cancelEditing();
+                }
+            }
+        }
+
+        if (editingNoteId) {
+            document.addEventListener("mousedown", handleOutsideClickSave);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClickSave);
+        };
+    }, [editingNoteId, saveEditedNote, cancelEditing]);
+
+    function startEditing(note) {
+        setEditingNoteId(note.id.toString());
+        setEditingTitle(note.title);
+        setEditingContent(note.content);
+    }
+
+    function cancelEditing() {
+        setEditingNoteId(null);
+        setEditingTitle('');
+        setEditingContent('');
     }
 
     return (
@@ -215,9 +286,28 @@ export default function FocusMode() {
                             {/* Note Content */}
                             <div className="modal-note-section">
                                 <div className="modal-header">
-                                    <h2 className="modal-title">
-                                        {selectedNote.title || 'Untitled'}
-                                    </h2>
+
+                                {editingNoteId?.toString() === selectedNote.id.toString() ? (
+                                    <div ref={outsSaveRefTitle}>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter a title..."
+                                            value={editingTitle}
+                                            onChange={(e) => setEditingTitle(e.target.value)}
+                                            id="new_note_inputTitle"
+                                            className="new_note_inputTitle"
+                                            // onClick={(e) => e.stopPropagation()}
+                                            // autoFocus
+                                        ></input>
+                                    </div>
+                                    ) : (
+                                    <>
+                                        <h2 className="modal-title">
+                                            {selectedNote.title || 'Untitled'}
+                                        </h2>
+                                    </>
+
+                                    )}
                                     <button onClick={closeNote} className="close-button">
                                         ✕
                                     </button>
@@ -238,10 +328,43 @@ export default function FocusMode() {
 
                                 <div className="note-content-section">
                                     <h3 className="content-heading">Content:</h3>
-                                    <p className="content-text">
-                                        {selectedNote.content || 'No content'}
-                                    </p>
+                                    {editingNoteId?.toString() === selectedNote.id.toString() ? (
+                                        <div ref={outsSaveRefContent}>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter a note..."
+                                                value={editingContent}
+                                                onChange={(e) => setEditingContent(e.target.value)}
+                                                id="new_note_input"
+                                                className=''
+                                            />
+                                            <div className="editContainerButton">
+                                                <button className="saveEditingButton" onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    saveEditedNote()
+                                                }}>Save</button>
+                                                <button className="cancelEditingButton" onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    cancelEditing()
+                                                }}>Cancel</button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <p className="content-text">
+                                                {selectedNote.content || 'No content'}
+                                            </p>
+                                        </>
+                                    )}
                                 </div>
+
+                                <button 
+                                    id='btnEdit' 
+                                    className="btnEdit" 
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        startEditing(selectedNote)
+                                }}>Edit</button>
                             </div>
 
                             {/* Timers Panel */}

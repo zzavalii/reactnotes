@@ -63,7 +63,6 @@ export default function Overview() {
         setWeather(prev => !prev);
     }
 
-
     async function getCityWeather() {
         if (!city.trim()) {
             setError("Please enter the city");

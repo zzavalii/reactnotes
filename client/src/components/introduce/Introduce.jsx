@@ -23,9 +23,17 @@ export default function Introduce () {
             }
         }, [darkTheme])
 
+    useEffect(() => {
+        document.body.classList.add("introducePage");
+
+        return () => {
+            document.body.classList.remove("introducePage");
+        };
+    }, []);
+
     return (
         <>
-            <div className={styles.bodyIntroduce}>
+            <div className={`${styles.bodyIntroduce} ${darkTheme ? styles.darkIntroduce : ''}`}>
                 <header className="">
                     <div className={`${styles.headerContainerIntroduce} ${darkTheme ? styles.darkIntroduce : ''}`}>
                         <div className={`d-flex flex-wrap align-items-center`}>
@@ -112,9 +120,41 @@ export default function Introduce () {
                         </div>
                     </div>
                 </div>
-                {/* <div className="container2">
-                    
-                </div> */}
+
+
+                <div className={`${styles.container2} ${darkTheme ? styles.darkIntroduce : ''}`}>
+                    <div class={styles.wrapper2}>
+                        <div className={`${styles.box6} ${styles.box}`}>
+                                <div className={styles.imageBoxRightCon2}>
+                                    <img src="images\newFocusMode1.jpg" alt="" />
+                                </div>  
+                                <div className={styles.threeBlocksUnderShy}>
+                                    <h2>Focus panel</h2>
+                                    <p><b>&copy; ノートアプリ</b> &middot; October 05, 2025</p>
+                                </div>
+                        </div>
+                        <div className={`${styles.box7} ${styles.box}`}>
+                            <div className={styles.imageBox7}>
+                                <img src="images\newSortedTags1.jpg" alt="" />
+                            </div>
+                            <div className={styles.threeBlocksUnderShy}> 
+                                <h3>A convenient page for entries sorted by tags has been added.</h3>
+                                <p><b>&copy; ノートアプリ</b> &middot; November 29, 2025</p>
+                            </div>
+                        </div>
+                        <div className={`${styles.box8} ${styles.box}`}>
+                            <div className={`${styles.box8LastRow}`}>
+                                <div className={styles.imageBox8}>
+                                    <img src="images\focusmode.jpg" alt="" />
+                                </div> 
+                                <div className={styles.threeBlocksUnderShy}> 
+                                    <h3>The focus page will help you concentrate on a specific task.</h3> 
+                                    <p><b>&copy; ノートアプリ</b> &middot; December 1, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     )

@@ -265,6 +265,17 @@ export default function ColumnNotes() {
         dispatch({ type: ACTIONS.CANCEL_EDITING });
     }, []);
 
+    const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(() => {
+        return localStorage.getItem("isLeftPanelOpen") === "true";
+    });
+
+    function toggleLeftPanel() {
+        setIsLeftPanelOpen(prev => {
+            localStorage.setItem("isLeftPanelOpen", !prev);
+            return !prev;
+        });
+    }
+
 
     return (
         <>
@@ -281,13 +292,14 @@ export default function ColumnNotes() {
                 setWeatherData={(data) => dispatch({ type: ACTIONS.SET_WEATHER_DATA, payload: data })}
                 toggleDarkTheme={toggleDarkTheme}
                 darkTheme={darkTheme}
-                toggleLeftPanel={() => dispatch({ type: ACTIONS.TOGGLE_LEFT_PANEL })}
+                // toggleLeftPanel={() => dispatch({ type: ACTIONS.TOGGLE_LEFT_PANEL })}
+                toggleLeftPanel={toggleLeftPanel}
             />
 
             <div className="note_panel">
                 <div className="left_panel">
                     <TogglePanel 
-                        isOpen={state.ui.leftPanelOpen} 
+                        isOpen={isLeftPanelOpen} 
                         darkTheme={darkTheme}
                     />
                 </div>

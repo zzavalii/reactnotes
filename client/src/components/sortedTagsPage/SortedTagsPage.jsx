@@ -87,14 +87,15 @@ export default function SortedTagsPage() {
     return (
         <div className={styles.pageWrapper}>
             <div className={styles.header}>
-                <h1 className={styles.pageTitle}>Sorted tags:</h1>
+                <h1 className={` ${styles.pageTitle} ${darkTheme? styles.darker : ''}`}>Sorted tags:</h1>
                 <div className={styles.stats}>
-                    <div className={styles.statCard}>
-                        <span className={styles.statNumber}>{totalTags}</span>
+                    <div className={` ${styles.statCard} ${darkTheme? styles.darker : ''}`}>
+                        
+                        <span className={` ${styles.statNumber} ${darkTheme? styles.darker : ''}`}>{totalTags}</span>
                         <span className={styles.statLabel}>Tags</span>
                     </div>
-                    <div className={styles.statCard}>
-                        <span className={styles.statNumber}>{totalNotes}</span>
+                    <div className={` ${styles.statCard} ${darkTheme? styles.darker : ''}`}>
+                        <span className={` ${styles.statNumber} ${darkTheme? styles.darker : ''}`}>{totalNotes}</span>
                         <span className={styles.statLabel}>Notes</span>
                     </div>
                 </div>
@@ -102,7 +103,6 @@ export default function SortedTagsPage() {
 
             {Object.keys(tags).length === 0 ? (
                 <div className={styles.emptyState}>
-                    <span className={styles.emptyIcon}>🏷️</span>
                     <h2>No tags yet</h2>
                     <p>Start adding tags to your notes to organize them better!</p>
                 </div>
@@ -114,7 +114,9 @@ export default function SortedTagsPage() {
                             className={`${styles.tagBlock} ${selectedTags.has(tagName) ? styles.expanded : ''}`}
                         >
                             <div 
-                                className={styles.tagHeader}
+                                className={` ${styles.tagHeader} 
+                                    ${darkTheme ? styles.darker : ''}
+                                `}
                                 onClick={() => toggleTag(tagName)}
                             >
                                 <div 
@@ -139,10 +141,12 @@ export default function SortedTagsPage() {
                             >
                                 <div className={styles.listNotes}>
                                     {notes.map((note) => (
-                                        <div className={styles.note} key={note.id}>
+                                        <div className={` ${styles.note} ${darkTheme? styles.darker : ''}`} key={note.id}>
                                             <div className={styles.noteHeader}>
                                                 <h5 className={styles.noteTitle}>{note.title || 'Untitled'}</h5>
-                                                <span className={styles.noteStatus}>{note.status}</span>
+                                                <span className={`note-status status-${note.status || 'not_started'}`}>
+                                                    {note.status?.replace('_', ' ') || 'not started'}
+                                                </span>
                                             </div>
                                             <p className={styles.noteContent}>{note.content || 'No content'}</p>
                                             <div className={styles.noteFooter}>

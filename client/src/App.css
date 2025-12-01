@@ -1,0 +1,23 @@
+/*  scrollbar for Introduce */
+body.introducePage::-webkit-scrollbar {
+    width: 10px;
+    background-color: #bcb4b4;
+}
+
+body.introducePage::-webkit-scrollbar-thumb {
+    background-color: rgb(112, 139, 144);
+    border-radius: 10px;
+}
+
+body.introducePage::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(92, 93, 99);
+}
+
+body.darkIntroduce.introducePage::-webkit-scrollbar {
+    background-color: #3b3b3b;
+}
+
+body.darkIntroduce.introducePage::-webkit-scrollbar-thumb {
+    background-color: #5a5a5a;
+}
+/*  scrollbar for Introduce & dark theme*/

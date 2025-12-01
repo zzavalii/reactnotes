@@ -59,8 +59,10 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
 
                     <nav className="navbar navbar">
                         <div className="container-fluid">
-                            <button onClick={toggleLeftPanel} className="navbar-toggler" type="button" id="burger-btn" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span className="navbar-toggler-icon"></span>
+                            <button onClick={toggleLeftPanel} className="navbarToggler" type="button" id="burger-btn" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                                {darkTheme ? 
+                                    <img src="images/burger.svg" className='burgerIcon' alt="" /> 
+                                : <img src="images/burgerblack.svg" className='burgerIcon' alt="" />}
                             </button>
                         </div>
                     </nav>

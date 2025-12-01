@@ -1,9 +1,7 @@
 /* Container */
 .focus-mode-container {
     min-height: 100vh;
-    /* background-color: #f5f3ef; */
     padding: 2rem;
-    font-family: system-ui, -apple-system, sans-serif;
 }
 
 /* Loading State */

@@ -28,6 +28,22 @@
     margin-right: 40px;
 }
 
+.burgerIcon{
+    width: 20px;
+    height: 20px;
+    color: black;
+}
+
+.navbarToggler{
+    background-color: transparent;
+    border: 1px solid #8C8C8C;
+    border-radius: 0.5rem;
+}
+
+.navbarToggler:hover{
+    border-color: #2ec6d4;
+}
+
 .bottomContainer {
     position: fixed;
     top: 4rem;
@@ -101,3 +117,4 @@ input#cityName:-webkit-autofill {
 .underline{
     border-bottom: 1px solid grey;
 }
+
