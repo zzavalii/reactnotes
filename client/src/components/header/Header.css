@@ -118,3 +118,23 @@ input#cityName:-webkit-autofill {
     border-bottom: 1px solid grey;
 }
 
+.citySuggestions {
+    position: absolute;
+    background: white;
+    width: 200px;
+    margin-top: 4px;
+    list-style: none;
+    padding: 0;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 200;
+}
+
+.citySuggestions li {
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.citySuggestions li:hover {
+    background: #eee;
+}

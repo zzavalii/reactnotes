@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import '../header/Header.css'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useCitySuggestions } from '../notes/hooks/useCitySuggestions';
 
 export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city, setCity, getCityWeather, weatherData, loading, setError, error, setWeatherData, toggleDarkTheme, darkTheme }) {
 
@@ -11,6 +12,14 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
     const location = useLocation();
     const navigate = useNavigate()
 
+    const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+    const { suggestions } = useCitySuggestions(city, API_KEY);
+    const [showSuggestions, setShowSuggestions] = useState(true);
+
+    const handleSuggestionClick = (cityName) => {
+        setCity(cityName);
+        setShowSuggestions(false);
+    };
     //Weather outside click handler
     useEffect(() => {
         function handleOutsideClick(event) {
@@ -107,7 +116,11 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
                             type="text"
                             id="cityName"
                             value={city}
-                            onChange={(e) => setCity(e.target.value)}
+                            onChange={(e) => {
+                                setCity(e.target.value);
+                                setShowSuggestions(true);
+                            }}
+                            placeholder="Enter city"
                         />
                         <input
                             type="button"
@@ -115,6 +128,19 @@ export default function Header({toggleLeftPanel ,isWeather, toggleWeather, city,
                             id="applyCity"
                             onClick={getCityWeather}
                         />
+
+                        {showSuggestions && suggestions.length > 0 && (
+                            <ul className="citySuggestions">
+                                {suggestions.map((c, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => handleSuggestionClick(c.name)}
+                                    >
+                                        {c.name}, {c.country}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
                     {loading && <p>Downloading...</p>}
                     {error && <p style={{ color: "red" }}>{error}</p>}

@@ -292,7 +292,6 @@ export default function ColumnNotes() {
                 setWeatherData={(data) => dispatch({ type: ACTIONS.SET_WEATHER_DATA, payload: data })}
                 toggleDarkTheme={toggleDarkTheme}
                 darkTheme={darkTheme}
-                // toggleLeftPanel={() => dispatch({ type: ACTIONS.TOGGLE_LEFT_PANEL })}
                 toggleLeftPanel={toggleLeftPanel}
             />
 

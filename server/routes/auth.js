@@ -27,14 +27,14 @@ router.post("/registration", async (req, res) => {
         const [result] = await db.query(query, [email, hashedPassword]);
 
         if (result.affectedRows > 0) {
-            res.json({ message: "✅ Entry successfully added!" });
+            res.json({ message: "Entry successfully added!" });
         } else {
-            console.error("❌ Error: the entry was not added to the DB.");
-            res.status(500).json({ message: "❌ Server error" });
+            console.error("Error: the entry was not added to the DB.");
+            res.status(500).json({ message: "Server error" });
         }
     } catch (err) {
         console.error("Registration error:", err);
-        res.status(500).json({ message: "❌ Server error" });
+        res.status(500).json({ message: "Server error" });
     }
 })
 
@@ -95,7 +95,7 @@ router.post("/sendMail", (req, res) => {
 
     } catch (err) {
         console.error("Sending error:", err);
-        res.status(500).json({ message: "❌ Server error" });
+        res.status(500).json({ message: "Server error" });
     }
 
 })
@@ -106,15 +106,15 @@ router.post("/verify", (req, res) => {
     const storedCode = verificationCodes.get(email);
 
     if (!storedCode) {
-        return res.status(400).json({ message: "❌ Code not found or expired" });
+        return res.status(400).json({ message: "Code not found or expired" });
     }
     if (storedCode !== code) {
-        return res.status(400).json({ message: "❌ Incorrect confirmation code" });
+        return res.status(400).json({ message: "Incorrect confirmation code" });
     }
 
     verificationCodes.delete(email);
 
-    res.json({ message: "✅ The code has been confirmed, you may proceed." });
+    res.json({ message: "The code has been confirmed, you may proceed." });
 });
 
 router.post("/authorization", async (req, res) => {
@@ -132,7 +132,7 @@ router.post("/authorization", async (req, res) => {
         const isMatchPassword = await bcrypt.compare(password, user.password);
 
         if (!isMatchPassword) {
-            return res.status(401).json({ message: "❌ Incorrect password" });
+            return res.status(401).json({ message: "Incorrect password" });
         }
 
         const expiresIn = rememberMe ? '5d' : '5h';
@@ -144,11 +144,11 @@ router.post("/authorization", async (req, res) => {
         );
         console.log(token);
 
-        res.status(200).json({ message: "✅ Authorization success", token, email: user.email, userId: user.user_id });
+        res.status(200).json({ message: "Authorization success", token, email: user.email, userId: user.user_id });
 
     } catch (err) {
         console.error("Registration error:", err);
-        res.status(500).json({ message: "❌ Server error" });
+        res.status(500).json({ message: "Server error" });
     }
 });
 

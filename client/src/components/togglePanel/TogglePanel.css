@@ -5,7 +5,6 @@
     transition: width 0.3s ease;
     background-color: #eeebe4;
     z-index: 1000;
-    transition: 0.2s;
 }
 
 .TogglePanelBlock.open {
