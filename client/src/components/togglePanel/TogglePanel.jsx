@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function TogglePanel ({isOpen, darkTheme}) {
+
     const userInfoRef = useRef(null);
     const [isUserInfo, setUserInfo] = useState(false);
     const [isUserPanel, setUserPanel] = useState(false);
@@ -78,7 +79,6 @@ export default function TogglePanel ({isOpen, darkTheme}) {
                                 <div>
                                     Sorted tags
                                 </div>
-                                <div className="newBlockAdded">New*</div>
                             </Link>
                             <Link className="divButtonTagsGroup" to="/focusmode">
                                 <div>
@@ -86,15 +86,17 @@ export default function TogglePanel ({isOpen, darkTheme}) {
                                 </div>
                                 <div className="newBlockAdded">New*</div>
                             </Link>
-                            <Link className="divButtonTagsGroup" to="/viewcalendar">
+                            <Link className="divButtonTagsGroup" to="/calendarview">
                                 <div>
                                     Calendar view
                                 </div>
+                                <div className="newBlockAdded">New*</div>
                             </Link>
                             <Link className="divButtonTagsGroup" to="/viewvanila">
                                 <div>
                                     Vanila view
                                 </div>
+                                <div className="soonBlockAdded">Soon*</div>
                             </Link>
                         </div>
                     </div>

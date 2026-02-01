@@ -200,6 +200,7 @@ export default function Overview() {
         });
     }, [notes]);
 
+
     // ----- Dragging ----- //
     const handleDragOver = e => e.preventDefault();
 
@@ -252,11 +253,15 @@ export default function Overview() {
             if (moveX > 3 || moveY > 3) {
                 setIsDragging(true);
             }
+
+            const leftPanelWidth = isLeftPanelOpen ? 250 : 0; 
+            const containerRect = containerRef.current.getBoundingClientRect();
+
             let x = eMove.clientX - containerRef.current.getBoundingClientRect().left - offsetX;
             let y = eMove.clientY - containerRef.current.getBoundingClientRect().top - offsetY;
 
-            x = Math.max(0, Math.min(x, containerRef.current.offsetWidth - el.offsetWidth));
-            y = Math.max(0, Math.min(y, containerRef.current.offsetHeight - el.offsetHeight));
+            x = Math.max(leftPanelWidth, Math.min(x, containerRect.width - el.offsetWidth));
+            y = Math.max(0, Math.min(y, containerRect.height - el.offsetHeight));
 
             el.style.position = "absolute";
             el.style.left = x + "px";
@@ -435,6 +440,27 @@ export default function Overview() {
     const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(() => {
         return localStorage.getItem("isLeftPanelOpen") === "true";
     });
+
+    useEffect(() => {
+        const leftPanelWidth = isLeftPanelOpen ? 270 : 0; 
+        
+        notes.forEach(note => {
+            const el = notesRef.current[note.id];
+            if (!el) return;
+            
+            const currentX = parseInt(el.style.left) || 0;
+            const currentY = parseInt(el.style.top) || 0;
+            
+            if (isLeftPanelOpen && currentX < leftPanelWidth) {
+                const adjustedX = leftPanelWidth;
+                el.style.left = adjustedX + "px";
+                localStorage.setItem(`note-pos-${note.id}`, JSON.stringify({ 
+                    x: adjustedX, 
+                    y: currentY 
+                }));
+            }
+        });
+    }, [isLeftPanelOpen, notes]);
 
     function toggleLeftPanel() {
         setIsLeftPanelOpen(prev => {

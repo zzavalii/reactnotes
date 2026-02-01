@@ -9,6 +9,7 @@ import Introduce from './components/introduce/introduce';
 import ReminderManager from './components/ReminderManager/ReminderManager'; 
 import SortedTagsPage from './components/SortedTagsPage/SortedTagsPage';
 import FocusMode from './components/focusmode/FocusMode';
+import CalendarView from './components/CalendarView/CalendarView';
 
 function App() {
   return (
@@ -24,8 +25,9 @@ function App() {
           <Route path="/pagetags" element={<SortedTagsPage/>} />
           <Route path="/notes" element={<ColumnNotes/>}/>
           <Route path="/overview" element={<Overview/>}/>
-          <Route path="/vanila" element={<VanilaNotes/>}/>
+          <Route path="/viewvanila" element={<VanilaNotes/>}/>
           <Route path="/focusmode" element={<FocusMode/>}/>
+          <Route path="calendarview" element={<CalendarView />}/>
         </Routes>
       </BrowserRouter>
     </>

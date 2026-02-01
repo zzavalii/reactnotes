@@ -121,4 +121,37 @@ router.put('/notes/update/:id', authenticateToken, async (req, res) => {
     }
 })
 
+router.get('/notes/calendar', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { year, month } = req.query;
+        
+        let query = 'SELECT * FROM notes WHERE user_id = ?';
+        let params = [userId];
+        
+        if (year && month) {
+            query += ' AND YEAR(created_at) = ? AND MONTH(created_at) = ?';
+            params.push(year, month);
+        }
+        
+        query += ' ORDER BY created_at DESC';
+        
+        const [notes] = await db.query(query, params);
+
+        const notesByDate = notes.reduce((acc, note) => {
+            const date = new Date(note.created_at).toISOString().split('T')[0];
+            if (!acc[date]) {
+                acc[date] = [];
+            }
+            acc[date].push(note);
+            return acc;
+        }, {});
+        
+        res.json({ notesByDate, notes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 export default router; 

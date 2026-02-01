@@ -41,6 +41,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid transparent;
+    border-left: 4px solid #e5e7eb;
 }
 
 .note-card:hover {
@@ -69,14 +70,14 @@
 
 .note-status {
     padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    border-radius: 0.5rem;
     font-size: 0.75rem;
     font-weight: 600;
     white-space: nowrap;
     text-transform: capitalize;
 }
 
-.status-done {
+/* .status-done {
     background-color: #0fc63a;
     color: #155724;
 }
@@ -89,7 +90,7 @@
 .status-not_started {
     background-color: #f8d7da;
     color: #721c24;
-}
+} */
 
 .note-card-content {
     margin: 0;

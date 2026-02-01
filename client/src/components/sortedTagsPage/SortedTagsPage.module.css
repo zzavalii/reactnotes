@@ -247,6 +247,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     border: 2px solid transparent;
+    border-left: 4px solid #e5e7eb;
 }
 
 .note:hover {

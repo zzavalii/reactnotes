@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import styles from './SortedTagsPage.module.css'
 import { Link } from "react-router-dom";
+import { STATUS_CONFIG } from "../../config/noteStatuses";
 
 export default function SortedTagsPage() {
     const [tags, setTags] = useState({});
@@ -51,7 +52,7 @@ export default function SortedTagsPage() {
     }, [token]);
 
     const tagColors = [
-        '#FFB6C1', '#FFA07A', '#FFD700', '#98FB98', 
+        '#c0e172ff', '#FFA07A', '#FFD700', '#98FB98', 
         '#87CEEB', '#DDA0DD', '#F0E68C', '#B0E0E6',
         '#FFDAB9', '#E6E6FA', '#FFE4E1', '#D8BFD8'
     ];
@@ -141,17 +142,27 @@ export default function SortedTagsPage() {
                             >
                                 <div className={styles.listNotes}>
                                     {notes.map((note) => (
-                                        <div className={` ${styles.note} ${darkTheme? styles.darker : ''}`} key={note.id}>
+                                        <div
+                                            style={{
+                                                borderLeftColor: STATUS_CONFIG[note.status]?.color || '#ccc'
+                                            }}
+                                            className={` ${styles.note} ${darkTheme? styles.darker : ''}`} key={note.id}
+                                        >
                                             <div className={styles.noteHeader}>
                                                 <h5 className={styles.noteTitle}>{note.title || 'Untitled'}</h5>
-                                                <span className={`note-status status-${note.status || 'not_started'}`}>
+                                                <span
+                                                style={{
+                                                    color: STATUS_CONFIG[note.status]?.color || '#666',
+                                                    backgroundColor: STATUS_CONFIG[note.status]?.bgColor || '#f3f4f6'
+                                                }} 
+                                                className={`note-status status-${note.status || 'not_started'}`}>
                                                     {note.status?.replace('_', ' ') || 'not started'}
                                                 </span>
                                             </div>
                                             <p className={styles.noteContent}>{note.content || 'No content'}</p>
                                             <div className={styles.noteFooter}>
                                                 <span className={styles.noteDate}>
-                                                    📅 {note.created_at ? new Date(note.created_at).toLocaleDateString('en-US', {
+                                                    {note.created_at ? new Date(note.created_at).toLocaleDateString('en-US', {
                                                         year: 'numeric',
                                                         month: 'short',
                                                         day: 'numeric'

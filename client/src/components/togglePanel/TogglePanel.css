@@ -274,7 +274,15 @@
 .newBlockAdded{
     background-color: rgba(58, 150, 225, 0.5);
     border-radius: 0.5rem;
-    padding: 0.2rem;
+    padding: 0.3rem;
+    font-size: 11px;
+    margin-right: 15px;
+}
+
+.soonBlockAdded{
+    background-color: rgba(219, 225, 58, 0.5);
+    border-radius: 0.5rem;
+    padding: 0.3rem;
     font-size: 11px;
     margin-right: 15px;
 }

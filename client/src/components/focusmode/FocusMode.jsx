@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './FocusMode.css';
+import { STATUS_CONFIG } from '../../config/noteStatuses';
 
 export default function FocusMode() {
+
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -262,13 +264,22 @@ export default function FocusMode() {
                                 key={note.id}
                                 onClick={() => handleNoteClick(note)}
                                 className="note-card"
+                                style={{
+                                    borderLeftColor: STATUS_CONFIG[note.status]?.color || '#ccc'
+                                }}
                             >
                                 <div className="note-card-header">
                                     <h3 className="note-card-title">
                                         {note.title || 'Untitled'}
                                     </h3>
-                                    <span className={`note-status status-${note.status || 'not_started'}`}>
-                                        {note.status?.replace('_', ' ') || 'not started'}
+                                    <span 
+                                        style={{
+                                            color: STATUS_CONFIG[note.status]?.color || '#666',
+                                            backgroundColor: STATUS_CONFIG[note.status]?.bgColor || '#f3f4f6'
+                                        }} 
+                                        className={`note-status status-${note.status || 'not_started'}`}
+                                    >
+                                            {note.status?.replace('_', ' ') || 'not started'}
                                     </span>
                                 </div>
                                 <p className="note-card-content">
