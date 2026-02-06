@@ -40,14 +40,12 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
     border-left: 4px solid #e5e7eb;
 }
 
 .note-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    border-color: #6b9bd1;
 }
 
 .note-card-header {
@@ -77,21 +75,6 @@
     text-transform: capitalize;
 }
 
-/* .status-done {
-    background-color: #0fc63a;
-    color: #155724;
-}
-
-.status-in_progress {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.status-not_started {
-    background-color: #f8d7da;
-    color: #721c24;
-} */
-
 .note-card-content {
     margin: 0;
     color: #666;
@@ -101,6 +84,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+    line-clamp: 3;
 }
 
 /* Modal */

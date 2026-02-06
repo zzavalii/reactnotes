@@ -16,10 +16,14 @@ const CalendarView = () => {
     const timelineRef = useRef(null);
 
     const buttonDarkThemeRef = useRef(null);
-    
+
     const [darkTheme, setDarkTheme] = useState(() => {
-        return localStorage.getItem("darkTheme") === 'true'; 
+        return localStorage.getItem("darkTheme") === 'true';
     })
+
+    const [isAdding, setIsAdding] = useState({
+        not_started: false
+    });
 
     useEffect(() => {
         if (darkTheme) {
@@ -32,7 +36,7 @@ const CalendarView = () => {
     function toggleDarkTheme() {
         setDarkTheme(prev => {
             const newTheme = !prev;
-            localStorage.setItem("darkTheme", newTheme);  
+            localStorage.setItem("darkTheme", newTheme);
             return newTheme;
         });
     }
@@ -89,10 +93,10 @@ const CalendarView = () => {
             if (!response.ok) throw new Error('Failed to update status');
 
             const data = await response.json();
-            
+
             // Update local state
-            setNotes(prevNotes => 
-                prevNotes.map(note => 
+            setNotes(prevNotes =>
+                prevNotes.map(note =>
                     note.id === noteId ? { ...note, status: newStatus } : note
                 )
             );
@@ -105,7 +109,7 @@ const CalendarView = () => {
     const filterNotes = (notesList) => {
         return notesList.filter(note => {
             const matchesStatus = selectedStatus === 'all' || note.status === selectedStatus;
-            const matchesSearch = !searchQuery || 
+            const matchesSearch = !searchQuery ||
                 note.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 note.content?.toLowerCase().includes(searchQuery.toLowerCase());
             return matchesStatus && matchesSearch;
@@ -290,7 +294,7 @@ const CalendarView = () => {
                                                         {formatTime(note.created_at)}
                                                     </span>
                                                 </div>
-                                                
+
                                                 <select
                                                     value={note.status}
                                                     onChange={(e) => handleStatusChange(e, note.id)}
@@ -322,8 +326,34 @@ const CalendarView = () => {
                         ))}
                 </div>
             )}
+
+            {isAdding.not_started ? (
+                <div className={styles.note_wrapperOverview} ref={addingRef}>
+                    <div id='inputsContainerOverview' className={styles.inputsContainerOverview}>
+                        <input
+                            type="text"
+                            placeholder="Enter a title..."
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            id="new_note_inputTitle"
+                            className={styles.new_note_inputTitle}
+                            autoFocus
+                        />
+                        <input
+                            type="text"
+                            placeholder="Enter a note..."
+                            value={newContent}
+                            onChange={(e) => setNewContent(e.target.value)}
+                            id="new_note_input"
+                        />
+                    </div>
+                    <button onClick={() => addNote("not_started")} id='saveBtnOverview' className={styles.saveBtnOverview}>Save</button>
+                </div>
+            ) : (
+                <button className={styles.add_button} id='overviewAddButton' onClick={() => toggleAdding("not_started")}>+ Add Note</button>
+            )}
             <Link to="/notes">
-                <input type="button" className='back' value="Back to main"/>
+                <input type="button" className='back' value="Back to main" />
             </Link>
 
             <input type="button" className='darkthemebutton' name="" value="DarkTheme" ref={buttonDarkThemeRef} onClick={toggleDarkTheme} id="" />

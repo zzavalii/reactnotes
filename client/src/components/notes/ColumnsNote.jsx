@@ -276,6 +276,51 @@ export default function ColumnNotes() {
         });
     }
 
+    // const toggleItemStatus = async (itemId, isDone) => {
+    //     try {
+    //         const res = await fetch(
+    //             `http://localhost:3001/noteitems/${itemId}/status`,
+    //             {
+    //                 method: "PUT",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: `Bearer ${token}`
+    //                 },
+    //                 body: JSON.stringify({ is_done: isDone })
+    //             }
+    //         );
+
+    //         if (!res.ok) {
+    //             throw new Error('Failed to update item status');
+    //         }
+
+    //         const data = await res.json();
+
+    //         console.log('Updated note data:', data.note);
+
+    //         dispatch({
+    //             type: ACTIONS.UPDATE_NOTE_ITEMS_COUNT,
+    //             payload: data.note
+    //         });
+    //     } catch (err) {
+    //         console.error('Error updating item status:', err);
+    //     }
+    // };
+
+    function handleItemStatusChange(noteId, itemId, isDone) {
+        const note = state.notes.find(n => n.id === noteId);
+        if (!note) return;
+
+        const updatedItemsDone = isDone ? Number(note.items_done) + 1 : Number(note.items_done) - 1;
+
+        const updatedNote = {
+            ...note,
+            items_done: updatedItemsDone
+        };
+
+        const updatedNotes = state.notes.map(n => n.id === noteId ? updatedNote : n);
+        dispatch({ type: ACTIONS.SET_NOTES, payload: updatedNotes });
+    }
 
     return (
         <>
@@ -348,6 +393,7 @@ export default function ColumnNotes() {
 
             {state.ui.selectedNoteId && (
                 <ItemsModal
+                    toggleItemStatus={handleItemStatusChange}
                     key={state.ui.selectedNoteId}
                     noteId={state.ui.selectedNoteId}
                     token={token}

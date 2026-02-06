@@ -25,6 +25,7 @@ const NoteItem = memo(function NoteItem({
     onDragStart,
     onDragEnd
 }) {
+    const progress = note.items_count === 0 ? 0 : Math.round((note.items_done / note.items_count) * 100);
     return (
         <div
             className="note"
@@ -98,7 +99,7 @@ const NoteItem = memo(function NoteItem({
                     </div>
 
                     <h5 className='titleNoteText'>{note.title}</h5>
-                    <p>{note.content}</p>
+                    <p className='contentNoteText'>{note.content}</p>
 
                     <div className="tagsBlock">
                         {note.tags && note.tags.length > 0 && (
@@ -182,6 +183,29 @@ const NoteItem = memo(function NoteItem({
                             </button>
                         )}
                     </div>
+                    <div
+                        className="circleProgress"
+                        style={{
+                            background: `conic-gradient(
+                            #4caf98ff ${progress}%,
+                            #e0e0e0 ${progress}%
+                            )`
+                        }}
+                        >
+                        {note.items_count > 0 ? (
+                            <>
+                                <span className="circleText">
+                                    {note.items_done}/{note.items_count}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="circleText">
+                                    0
+                                </span>
+                            </>
+                        )}
+                    </div>
                 </>
             )}
         </div>
@@ -193,6 +217,8 @@ const NoteItem = memo(function NoteItem({
         prevProps.note.title === nextProps.note.title &&
         prevProps.note.content === nextProps.note.content &&
         prevProps.note.tags?.length === nextProps.note.tags?.length &&
+        prevProps.note.items_done === nextProps.note.items_done &&
+        prevProps.note.items_count === nextProps.note.items_count &&
         prevProps.isEditing === nextProps.isEditing &&
         prevProps.isAddingTag === nextProps.isAddingTag &&
         prevProps.editingTitle === nextProps.editingTitle &&

@@ -29,10 +29,33 @@ router.post("/newnote", authenticateToken, async (req, res) => {
     }
 });
 
+// router.get('/usernotes', authenticateToken, async (req, res) => {
+//     try {
+//         const userId = req.user.userId;
+//         const query = 'SELECT * FROM notes WHERE user_id = ? ORDER BY created_at DESC';
+//         const [result] = await db.query(query, [userId]);
+
+//         res.json({ notes: result });
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: "Server error" });
+//     }
+// });
+
 router.get('/usernotes', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.userId;
-        const query = 'SELECT * FROM notes WHERE user_id = ? ORDER BY created_at DESC';
+        const query = `
+            SELECT 
+                n.*, 
+                COUNT(ni.item_id) as items_count, 
+                SUM(ni.is_done = 1) AS items_done
+            FROM notes n
+            LEFT JOIN notesitems ni ON ni.note_id = n.id
+            WHERE n.user_id = ?
+            GROUP BY n.id
+            ORDER BY n.created_at DESC`;
         const [result] = await db.query(query, [userId]);
 
         res.json({ notes: result });

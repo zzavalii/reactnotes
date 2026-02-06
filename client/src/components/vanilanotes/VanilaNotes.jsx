@@ -3,6 +3,28 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Стили Quill
 
 export default function VanilaNotes() {
+
+    const [numState, setNumState] = useState(0)
+
+    function increment () {
+        setNumState(prev => prev + 1)
+    }
+
+    return (
+        <>
+            {numState}
+            <button onClick={increment}>+</button>
+        </>
+    )
+}
+
+
+
+
+
+
+
+
 //     const [value, setValue] = useState("");
 
 //     // Настройка тулбара
@@ -37,41 +59,3 @@ export default function VanilaNotes() {
 //             />
 //         </div>
 //     );
-
-
-    const initialValue = { num: 0 }
-
-    const [number, dispatch] = useReducer(reducer, initialValue)
-
-    function reducer(state, action) {
-        switch(action.type){
-            case "ACTIONS_PLUS":
-                return {
-                    num: state.num + action.payload
-                }
-
-            case "ACTIONS_MINUS":
-                return {
-                    num: state.num - action.payload
-                }
-
-            default:
-                return state;
-        }
-    }
-
-    return (
-        <>
-            <div className="con">
-                <h2>{number.num}</h2>
-            </div>
-
-            <button onClick={() => {
-                dispatch({type: "ACTIONS_PLUS", payload: 2})
-            }}>plus</button>
-            <button onClick={() => {
-                dispatch({type: "ACTIONS_MINUS", payload: 1})
-            }}>minus</button>
-        </>
-    )
-}

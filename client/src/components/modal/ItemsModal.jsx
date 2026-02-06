@@ -4,7 +4,7 @@ import './ItemsModal.css'
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
 
-export default function ItemsModal({ noteId, token, onClose }) {
+export default function ItemsModal({ noteId, token, onClose, toggleItemStatus }) {
     const [items, setItems] = useState([]);
     const [isAdding, setIsAdding] = useState(false);
     const [newContent, setNewContent] = useState("");
@@ -42,26 +42,6 @@ export default function ItemsModal({ noteId, token, onClose }) {
             });
             const data = await res.json();
             setItems(prev => [...prev, data.noteItem]);
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    async function toggleItem(id, isDone) {
-        try {
-            await fetch(`http://localhost:3001/noteitems/${id}/status`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ is_done: isDone })
-            });
-            setItems(prev =>
-                prev.map(item =>
-                    item.item_id === id ? { ...item, is_done: isDone } : item
-                )
-            );
         } catch (err) {
             console.error(err);
         }
@@ -209,19 +189,19 @@ export default function ItemsModal({ noteId, token, onClose }) {
     // ---- Quill config ----
 
     const modules = {
-    toolbar: [
-        [{ font: [] }, { size: [] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ color: [] }, { background: [] }],
-        [{ script: "sub" }, { script: "super" }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ["blockquote", "code-block"],
-        [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
-        [{ indent: "-1" }, { indent: "+1" }],
-        [{ direction: "rtl" }, { align: [] }],
-        ["link", "image", "video"],
-        ["clean"]
-    ]
+        toolbar: [
+            [{ font: [] }, { size: [] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ color: [] }, { background: [] }],
+            [{ script: "sub" }, { script: "super" }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+            [{ indent: "-1" }, { indent: "+1" }],
+            [{ direction: "rtl" }, { align: [] }],
+            ["link", "image", "video"],
+            ["clean"]
+        ]
     };
 
     const formats = [
@@ -260,8 +240,25 @@ export default function ItemsModal({ noteId, token, onClose }) {
                             <input
                                 type="checkbox"
                                 className="checkItem"
-                                checked={item.is_done}
-                                onChange={e => toggleItem(item.item_id, e.target.checked)}
+                                checked={Boolean(item.is_done)}
+                                onChange={e => {
+                                    const newDone = e.target.checked;
+
+                                    setItems(prev =>
+                                        prev.map(i => i.item_id === item.item_id ? { ...i, is_done: newDone } : i)
+                                    );
+
+                                    toggleItemStatus(noteId, item.item_id, newDone);
+
+                                    fetch(`http://localhost:3001/noteitems/${item.item_id}/status`, {
+                                        method: "PUT",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            Authorization: `Bearer ${token}`
+                                        },
+                                        body: JSON.stringify({ is_done: newDone })
+                                    }).catch(console.error);
+                                }}
                             />
 
                             <div className="quillWrapper textItem">

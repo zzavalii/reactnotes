@@ -6,6 +6,8 @@ export const ACTIONS = {
     DELETE_NOTE: "DELETE_NOTE",
     UPDATE_NOTE_STATUS: "UPDATE_NOTE_STATUS",
 
+    UPDATE_NOTE_ITEMS_COUNT: "UPDATE_NOTE_ITEMS_COUNT",
+
     SET_NEW_TITLE: 'SET_NEW_TITLE',
     SET_NEW_CONTENT: 'SET_NEW_CONTENT',
     CLEAR_NEW_NOTE: 'CLEAR_NEW_NOTE',
@@ -122,6 +124,14 @@ export function notesReducer(state, action){
                     : note
                 )
             };
+
+        case ACTIONS.UPDATE_NOTE_ITEMS_COUNT:
+        return {
+            ...state,
+            notes: state.notes.map(n => 
+                n.id === action.payload.id ? { ...n, items_count: action.payload.items_count, items_done: action.payload.items_done } : n
+            )
+        };
 
         // ========= Creating new note =========
         case ACTIONS.SET_NEW_TITLE:

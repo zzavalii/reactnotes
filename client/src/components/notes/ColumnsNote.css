@@ -93,7 +93,7 @@ body {
 .note:hover{
     transform: translateY(2px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-    border-color: #6b9bd1;
+    border-color: #747b8184;
 }
 
 .titleNoteText{
@@ -214,7 +214,6 @@ body {
     background-color: rgb(197, 194, 194, 0.5);
 }
 
-/* поменять на add_note_not_started и тд------------------------------------------------------------------------------------------------ */
 button#add_note_not_started {
     font-weight: 600;
     color: #382b22;
@@ -238,7 +237,7 @@ button#saveBtn_notStarted:hover {
     transition: 0.3s all ease;
 }
 
-/* ========== Заметки в процессе ========== */
+/* ========== Notes in progress ========== */
 .note_inprogress {
     background-color: rgba(165, 138, 239, 0.2);
     width: 20rem;
@@ -319,6 +318,58 @@ button#saveBtn_Done:hover {
     background: rgb(80, 243, 88);
     transform: translate(0, 0.15em);
     transition: 0.3s all ease;
+}
+
+.note_notstarted,
+.note_inprogress,
+.note_done{
+        transition:
+            width 0.3s ease,
+            padding 0.3s ease,
+            font-size 0.3s ease;
+    }
+
+/* ===== MEDIA QUERIES ===== */
+@media (max-width: 1440px) {
+    .note_notstarted,
+    .note_inprogress,
+    .note_done{
+        width: 17rem;
+        padding: 1rem;
+        box-sizing: border-box;
+        border-radius: 0.5rem;
+        transition:
+            width 0.3s ease,
+            padding 0.3s ease,
+            font-size 0.3s ease;
+    }
+
+    .titleNoteText{
+        font-size: 18px;
+        transition: font-size 0.3s ease;
+    }
+    .contentNoteText{
+        font-size: 14px;
+        transition: font-size 0.3s ease;
+    }
+}
+
+@media (max-width: 1260px) {
+    .note_notstarted,
+    .note_inprogress,
+    .note_done{
+        width: 16rem;
+        padding: 1rem;
+        box-sizing: border-box;
+        border-radius: 0.5rem;
+    }
+
+    .titleNoteText{
+        font-size: 16px;
+    }
+    .contentNoteText{
+        font-size: 12px;
+    }
 }
 
 /* Общие контейнеры для 3 блоков */
@@ -715,3 +766,35 @@ button.cancelEditingButton:hover {
     color: white;
 }
 
+/* ===== ProgressTracker ===== */
+
+.circleProgress {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+}
+
+.circleProgress::before {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.circleText {
+    position: relative;
+    z-index: 1;
+}
